@@ -10,6 +10,7 @@ import {
   Ingress,
   Label,
   Tag,
+  Select,
   PxTable,
   } from '@pxweb2/pxweb2-ui';
 import useLocalizeDocumentAttributes from '../i18n/useLocalizeDocumentAttributes';
@@ -153,6 +154,10 @@ export function App() {
           </ul>
         </div>
       )}
+      <br />
+      <Select variant='default' showLabel labelText='Label'></Select>
+      <br />
+      <Select variant='inVariableBox'></Select>
       <br />
       <Tag size="medium" variant="info">
         Mandatory
