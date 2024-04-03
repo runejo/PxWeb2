@@ -155,9 +155,11 @@ export function App() {
         </div>
       )}
       <br />
-      <Select variant='default' showLabel labelText='Label'></Select>
+      <Select variant='default' label='Default'></Select>
       <br />
-      <Select variant='inVariableBox'></Select>
+      <Select variant='default' hideLabel label='Default'></Select>
+      <br />
+      <Select variant='inVariableBox' label='VariableBox'></Select>
       <br />
       <Tag size="medium" variant="info">
         Mandatory
