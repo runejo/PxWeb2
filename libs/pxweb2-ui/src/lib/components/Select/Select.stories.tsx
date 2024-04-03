@@ -10,21 +10,21 @@ export default meta;
 export const Default = {
   args: {
     variant: 'default',
-    showLabel: true,
-    labelText: 'Label',
+    label: 'Label',
+    hideLabel: false,
   },
 };
 
 export const ShowLabel: StoryFn<typeof Select> = () => {
   return (
     <>
-      <h1>ShowLabel</h1>
+      <h1>Hide Label</h1>
 
       <h2>With label:</h2>
-      <Select showLabel labelText="Label"></Select>
+      <Select label="Label"></Select>
 
       <h2>Without label:</h2>
-      <Select></Select>
+      <Select label="Label" hideLabel></Select>
  
     </>
   );
