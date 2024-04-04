@@ -14,57 +14,67 @@ export function Select({
   label,
   hideLabel = false,
 }: SelectProps) {
-
   return (
     <div>
       {variant === 'default' ? (
-        <div className={cl(classes.select)}>
-            <div className={cl(classes.labelWrapper, {[classes.visuallyHidden] : hideLabel})}>
-              <Label size="medium" textcolor="default">
-                {label}
-              </Label>
-            </div>
-          <div className={cl(classes.contentLayout, classes.contentStyle)}>
-            <span
-              className={cl(
-                classes.defaultOptionLayout,
-                classes.defaultOptionTypography
-              )}
-            >
-              Default option with a very long text
-            </span>
-            <Button
-              variant="tertiary"
-              icon="ChevronDown"
-              size="small"
-              aria-label={'Button with icon'}
-            ></Button>
-          </div>
-        </div>
+        DefaultSelect(hideLabel, label)
       ) : (
-        <div className={cl(classes.selectVariabelbox)}>
-          <div className={cl(classes.textWrapper)}>
-            <Label size="small" textcolor="default">
-              {label}
-            </Label>
-            <span
-              className={cl(
-                classes.defaultOptionLayoutVariablebox,
-                classes.defaultOptionTypography
-              )}
-            >
-              Default option with very loooong text
-            </span>
-          </div>
-          <Button
-              variant="tertiary"
-              icon="ChevronDown"
-              size="small"
-              aria-label={'Button with icon'}
-            ></Button>            
-        </div>
+        VariableBoxSelect(label)
       )}
     </div>
+  );
+}
+
+function DefaultSelect(hideLabel: boolean, label: string) {
+  return (
+    <div className={cl(classes.select)}>
+      <div
+        className={cl(classes.labelWrapper, {
+          [classes.visuallyHidden]: hideLabel,
+        })}
+      >
+        <Label size="medium" textcolor="default">
+          {label}
+        </Label>
+      </div>
+      <div className={cl(classes.contentLayout, classes.contentStyle)}>
+        <span className={cl(classes.optionLayout, classes.optionTypography)}>
+          Default option with a very long text
+        </span>
+        <Button
+          variant="tertiary"
+          icon="ChevronDown"
+          size="small"
+          aria-label={'Button with icon'}
+        ></Button>
+      </div>
+    </div>
+  );
+}
+
+function VariableBoxSelect(label: string) {
+  return (
+    <div className={cl(classes.selectVariabelbox)}>
+    <div className={cl(classes.textWrapper)}>
+      <Label size="small" textcolor="default">
+        {label}
+      </Label>
+      <span
+        className={cl(
+          classes.optionLayoutVariablebox,
+          classes.optionTypography
+        )}
+      >
+        Default option with very loooong text
+      </span>
+    </div>
+    <Button
+      variant="tertiary"
+      icon="ChevronDown"
+      size="small"
+      aria-label={'Button with icon'}
+    ></Button>
+  </div>    
   );
 }
 
