@@ -34,7 +34,7 @@
     background: var(--px-color-background-default);
 }
 
-.defaultOptionLayout {
+.optionLayout {
     display: -webkit-box;
     //min-height: 1.875rem;
     -webkit-box-orient: vertical;
@@ -42,7 +42,7 @@
     flex: 1 0 0;
 }
 
-.defaultOptionTypography {
+.optionTypography {
     overflow: hidden;
     color: var(--px-color-text-default);
     text-overflow: ellipsis;
@@ -95,7 +95,7 @@
     flex: 1 0 0;
 }   
 
-.defaultOptionLayoutVariablebox {
+.optionLayoutVariablebox {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
