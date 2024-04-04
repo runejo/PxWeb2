@@ -2,6 +2,7 @@ import cl from 'clsx';
 import classes from './Select.module.scss';
 import Label from '../Typography/Label/Label';
 import Button from '../Button/Button';
+import BodyShort from '../Typography/BodyShort/BodyShort';
 
 export interface SelectProps {
   variant?: 'default' | 'inVariableBox';
@@ -38,9 +39,9 @@ function DefaultSelect(hideLabel: boolean, label: string) {
         </Label>
       </div>
       <div className={cl(classes.contentLayout, classes.contentStyle)}>
-        <span className={cl(classes.optionLayout, classes.optionTypography)}>
+        <BodyShort size="medium" className={cl(classes.optionLayout, classes.optionTypography)}>
           Default option with a very long text
-        </span>
+        </BodyShort>
         <Button
           variant="tertiary"
           icon="ChevronDown"
@@ -59,14 +60,9 @@ function VariableBoxSelect(label: string) {
       <Label size="small" textcolor="default">
         {label}
       </Label>
-      <span
-        className={cl(
-          classes.optionLayoutVariablebox,
-          classes.optionTypography
-        )}
-      >
-        Default option with very loooong text
-      </span>
+      <BodyShort size="medium" className={cl(classes.optionLayoutVariablebox, classes.optionTypography)}>
+        Default option with a very long text
+      </BodyShort>
     </div>
     <Button
       variant="tertiary"
