@@ -33,6 +33,7 @@ jobs:
     - run: npm test
 
     - name: SonarCloud Scan
+      if: ${{ github.actor != 'dependabot[bot]' }}
       uses: SonarSource/sonarcloud-github-action@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
