@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import cl from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from '@uidotdev/usehooks';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 
 import classes from './VariableBoxContent.module.scss';
 import { Checkbox, MixedCheckbox } from '../../Checkbox/Checkbox';
@@ -9,15 +11,10 @@ import { Select, SelectOption } from '../../Select/Select';
 import { VariableBoxProps } from '../VariableBox';
 import { SelectedVBValues } from '../VariableBox';
 import { VartypeEnum } from '../../../shared-types/vartypeEnum';
-import { Virtuoso } from 'react-virtuoso';
 import { Value } from '../../../shared-types/value';
-import { useDebounce } from '@uidotdev/usehooks';
 import Skeleton from '../../Skeleton/Skeleton';
+import { mapCodeListsToSelectOptions } from '../../../util/util';
 
-type MappedCodeList = {
-  value: string;
-  label: string;
-};
 type VariableBoxPropsToContent = Omit<
   VariableBoxProps,
   'id' | 'mandatory' | 'tableId'
@@ -34,7 +31,7 @@ type VariableBoxContentProps = VariableBoxPropsToContent & {
     varId: string
   ) => void;
   onChangeCheckbox: (varId: string, value: string) => void;
-  onChangeMixedCheckbox: (varId: string, allValuesSelected: string) => void;
+  onChangeMixedCheckbox: (varId: string, allValuesSelected: string, searchValues: Value[]) => void;
 };
 
 export function VariableBoxContent({
@@ -99,7 +96,7 @@ export function VariableBoxContent({
       newItems.push({ type: 'mixedCheckbox' });
     }
 
-    values
+    valuesToRender
       .filter(
         (value) =>
           value.label.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1
@@ -109,6 +106,8 @@ export function VariableBoxContent({
       });
 
     setItems(newItems);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSevenOrMoreValues, hasTwoOrMoreValues, debouncedSearch, values]);
 
   useEffect(() => {
@@ -131,16 +130,20 @@ export function VariableBoxContent({
     checkboxDeselectAllText,
   ]);
 
-  let mappedCodeList: MappedCodeList[] = [];
+  let mappedCodeLists: SelectOption[] = [];
 
   if (hasCodeLists === true) {
-    mappedCodeList = codeLists?.map((codeList) => {
-      return {
-        value: codeList.id,
-        label: codeList.label,
-      };
-    });
+    mappedCodeLists = mapCodeListsToSelectOptions(codeLists);
   }
+
+  // needs the selected, mapped code list for the current variable
+  const currentVarSelectedCodeListId = selectedValues.find(
+    (variable) => variable.id === varId
+  )?.selectedCodeList;
+  const selectedCodeListMapped = mappedCodeLists.find(
+    (codeList) => codeList.value === currentVarSelectedCodeListId
+  );
+  const selectedCodeListOrUndefined = selectedCodeListMapped ?? undefined;
 
   const handleValueListKeyboardNavigation = (
     event: React.KeyboardEvent<HTMLDivElement>
@@ -184,16 +187,13 @@ export function VariableBoxContent({
       if (elementId) {
         const element = document.getElementById(elementId);
         if (element) {
-          console.log('focused on this', element);
           element.focus();
         }
       }
     }
   };
 
-  const currentVarSelectedCodeList = selectedValues.find(
-    (variable) => variable.id === varId
-  )?.selectedCodeList;
+  const searchedValues : Value[] = values.filter((value) => value.label.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1);
 
   // Modify the itemRenderer to assign IDs and tabIndex
   const itemRenderer = (items: any, index: number) => {
@@ -209,6 +209,9 @@ export function VariableBoxContent({
           <Search
             onChange={(value: string) => {
               setSearch(value);
+              if(value === '') {
+                setScrollingDown(false);
+              }
             }}
             variant="inVariableBox"
             showLabel={false}
@@ -232,7 +235,7 @@ export function VariableBoxContent({
             id={varId}
             text={mixedCheckboxText}
             value={allValuesSelected}
-            onChange={() => onChangeMixedCheckbox(varId, allValuesSelected)}
+            onChange={() => onChangeMixedCheckbox(varId, allValuesSelected, searchedValues)}
             ariaControls={valuesToRender.map((value) => value.code)}
             strong={true}
             inVariableBox={true}
@@ -254,6 +257,7 @@ export function VariableBoxContent({
                 ?.values.includes(value.code) === true
             }
             text={value.label.charAt(0).toUpperCase() + value.label.slice(1)}
+            searchTerm={search}
             onChange={() => onChangeCheckbox(varId, value.code)}
           />
         </div>
@@ -262,6 +266,38 @@ export function VariableBoxContent({
       return null;
     }
   };
+
+  //How many items should be sticky
+  const stickyTopValueCount = hasSevenOrMoreValues
+    ? 2
+    : hasTwoOrMoreValues
+    ? 1
+    : 0;
+
+  const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const [lastScrollPosition, setLastScrollPosition] = useState(0);
+  const [scrollingDown, setScrollingDown] = useState(false);
+
+  const handleVirtuosoScroll = () => {
+    if (virtuosoRef.current) {
+      virtuosoRef.current.getState((state) => {
+        const scrollTop = state.scrollTop;
+        const isIntentionalScrollUp = scrollTop < lastScrollPosition - 2;
+        const isIntentionalScrollDown = scrollTop > lastScrollPosition + 2;
+
+        if (isIntentionalScrollDown && !scrollingDown) {
+          setScrollingDown(true);
+        } else if (isIntentionalScrollUp && scrollingDown) {
+          setScrollingDown(false);
+        }
+        setLastScrollPosition(scrollTop);
+      });
+    }
+  };
+
+  // To override element styling added by Virtuoso when scrolling down
+  /* eslint-disable-next-line */
+  const TopItemListEmptyFragment = () => <></>;
 
   return (
     <div className={cl(classes['variablebox-content'])}>
@@ -283,12 +319,8 @@ export function VariableBoxContent({
               placeholder={t(
                 'presentation_page.sidemenu.selection.variablebox.content.select.placeholder'
               )}
-              options={mappedCodeList}
-              selectedOption={
-                currentVarSelectedCodeList
-                  ? currentVarSelectedCodeList
-                  : undefined
-              }
+              options={mappedCodeLists}
+              selectedOption={selectedCodeListOrUndefined}
               onChange={(selectedItem) => onChangeCodeList(selectedItem, varId)}
             />
           </div>
@@ -331,6 +363,9 @@ export function VariableBoxContent({
                   enter: (velocity) => Math.abs(velocity) > 1000,
                   exit: (velocity) => Math.abs(velocity) < 30,
                 }}
+                topItemCount={stickyTopValueCount}
+                ref={virtuosoRef}
+                onScroll={handleVirtuosoScroll}
                 components={{
                   ScrollSeekPlaceholder: ({ height }) => (
                     <Skeleton
@@ -339,6 +374,9 @@ export function VariableBoxContent({
                       width={50 + Math.ceil(Math.random() * 15) + '%'}
                     />
                   ),
+                  TopItemList: (scrollingDown && search === '')
+                    ? TopItemListEmptyFragment
+                    : undefined,
                 }}
               />
             )}
