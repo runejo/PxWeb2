@@ -16,6 +16,7 @@ import Skeleton from '../../Skeleton/Skeleton';
 import { mapCodeListsToSelectOptions } from '../../../util/util';
 import { BodyShort } from '../../Typography/BodyShort/BodyShort';
 import Heading from '../../Typography/Heading/Heading';
+import clsx from 'clsx';
 
 type VariableBoxPropsToContent = Omit<
   VariableBoxProps,
@@ -75,12 +76,12 @@ export function VariableBoxContent({
   const [currentFocusedItemIndex, setCurrentFocusedItemIndex] = useState<
     number | null
   >(null);
-
   const [items, setItems] = useState<{ type: string; value?: Value }[]>([]);
 
   const valuesOnlyList = useRef<HTMLDivElement>(null);
   const hasCodeLists = codeLists && codeLists.length > 0;
   const hasSevenOrMoreValues = values && values.length > 6;
+  const [initiallyHadSevenOrMoreValues] = useState(hasSevenOrMoreValues);
   const hasTwoOrMoreValues = values && values.length > 1;
   const hasSelectAndSearch = hasCodeLists && hasSevenOrMoreValues;
   const valuesToRender = structuredClone(values);
@@ -103,6 +104,10 @@ export function VariableBoxContent({
 
   useEffect(() => {
     const newItems: { type: string; value?: Value }[] = [];
+
+    if (!valuesToRender || valuesToRender.length === 0) {
+      return;
+    }
 
     if (hasSevenOrMoreValues) {
       newItems.push({ type: 'search' });
@@ -180,7 +185,7 @@ export function VariableBoxContent({
       setAllValuesSelected('true');
     }
   }, [
-    totalChosenValues,
+    --totalChosenValues,
     totalValues,
     checkboxSelectAllText,
     checkboxDeselectAllText,
@@ -251,9 +256,40 @@ export function VariableBoxContent({
     }
   };
 
+  const handleChangingCodeListInVariableBox = (
+    selectedItem: SelectOption | undefined,
+    varId: string,
+    virtuosoRef: React.RefObject<VirtuosoHandle>,
+  ) => {
+    // Call the parent function to change the code list
+    onChangeCodeList(selectedItem, varId);
+
+    // Reset search state
+    if (search !== '') {
+      setSearch('');
+    }
+
+    // Reset the scroll show/hide state
+    if (scrollingDown) {
+      setScrollingDown(false);
+    }
+
+    // Reset the virtuoso list to the top/first item
+    if (virtuosoRef.current) {
+      virtuosoRef.current.scrollToIndex(0);
+    }
+  };
+
   // Modify the itemRenderer to assign IDs and tabIndex
   const itemRenderer = (items: any, index: number) => {
     const item = items[index];
+
+    // There is a race condition with virtuoso where item can be undefined
+    // Virtuoso will also complain if we return null or similar, so we return an empty div
+    // This empty div will be removed by the Virtuoso component, and won't be rendered
+    if (item === undefined) {
+      return <div></div>;
+    }
 
     if (item.type === 'search') {
       return (
@@ -263,6 +299,7 @@ export function VariableBoxContent({
           className={classes['focusableItem']}
         >
           <Search
+            value={search}
             onChange={(value: string) => {
               setSearch(value);
               if (value === '') {
@@ -286,19 +323,31 @@ export function VariableBoxContent({
       );
     } else if (item.type === 'mixedCheckbox' && searchedValues.length > 0) {
       return (
-        <div id={varId} tabIndex={-1} className={classes['focusableItem']}>
-          <MixedCheckbox
+        <>
+          <div
+            className={classes['spacer']}
+            style={{ height: initiallyHadSevenOrMoreValues ? '4px' : '0px' }}
+          ></div>
+          <div
             id={varId}
-            text={mixedCheckboxText}
-            value={allValuesSelected}
-            onChange={() =>
-              onChangeMixedCheckbox(varId, allValuesSelected, searchedValues)
-            }
-            ariaControls={valuesToRender.map((value) => value.code)}
-            strong={true}
-            inVariableBox={true}
-          />
-        </div>
+            tabIndex={-1}
+            className={clsx(classes['focusableItem'], {
+              [classes['mixedCheckbox']]: true,
+            })}
+          >
+            <MixedCheckbox
+              id={varId}
+              text={mixedCheckboxText}
+              value={allValuesSelected}
+              onChange={() =>
+                onChangeMixedCheckbox(varId, allValuesSelected, searchedValues)
+              }
+              ariaControls={valuesToRender.map((value) => value.code)}
+              strong={true}
+              inVariableBox={true}
+            />
+          </div>
+        </>
       );
     } else if (
       item.type === 'value' &&
@@ -307,22 +356,31 @@ export function VariableBoxContent({
     ) {
       const value = item.value;
       return (
-        <div id={value.code} tabIndex={-1} className={classes['focusableItem']}>
-          <Checkbox
+        <>
+          <div
             id={value.code}
-            key={varId + value.code}
             tabIndex={-1}
-            value={
-              selectedValues?.length > 0 &&
-              selectedValues
-                .find((variables) => variables.id === varId)
-                ?.values.includes(value.code) === true
-            }
-            text={value.label.charAt(0).toUpperCase() + value.label.slice(1)}
-            searchTerm={search}
-            onChange={() => onChangeCheckbox(varId, value.code)}
-          />
-        </div>
+            className={clsx(classes['focusableItem'])}
+          >
+            <Checkbox
+              id={value.code}
+              key={varId + value.code}
+              tabIndex={-1}
+              value={
+                selectedValues?.length > 0 &&
+                selectedValues
+                  .find((variables) => variables.id === varId)
+                  ?.values.includes(value.code) === true
+              }
+              text={value.label.charAt(0).toUpperCase() + value.label.slice(1)}
+              searchTerm={search}
+              onChange={() => onChangeCheckbox(varId, value.code)}
+            />
+          </div>
+          {index === items.length - 1 && (
+            <div className={classes['spacer']}></div>
+          )}
+        </>
       );
     } else if (searchedValues.length === 0) {
       return (
@@ -396,7 +454,12 @@ export function VariableBoxContent({
 
   return (
     <div className={cl(classes['variablebox-content'])}>
-      <div className={cl(classes['variablebox-content-main'])}>
+      <div
+        className={cl(classes['variablebox-content-main'])}
+        style={{
+          paddingTop: initiallyHadSevenOrMoreValues ? '0px' : '4px',
+        }}
+      >
         {hasCodeLists === true && (
           <div className={cl(classes['variablebox-content-select'])}>
             <Select
@@ -416,7 +479,13 @@ export function VariableBoxContent({
               )}
               options={mappedCodeLists}
               selectedOption={selectedCodeListOrUndefined}
-              onChange={(selectedItem) => onChangeCodeList(selectedItem, varId)}
+              onChange={(selectedItem) =>
+                handleChangingCodeListInVariableBox(
+                  selectedItem,
+                  varId,
+                  virtuosoRef,
+                )
+              }
             />
           </div>
         )}
