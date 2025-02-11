@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router';
 
 import styles from './app.module.scss';
@@ -10,41 +10,112 @@ import { NavigationItem } from './components/NavigationMenu/NavigationItem/Navig
 import NavigationRail from './components/NavigationMenu/NavigationRail/NavigationRail';
 import NavigationBar from './components/NavigationMenu/NavigationBar/NavigationBar';
 import { SkipToMain } from './components/SkipToMain/SkipToMain';
-
 import { Footer } from './components/Footer/Footer';
-import { BreakpointsSmallMaxWidth } from '@pxweb2/pxweb2-ui';
 import { getConfig } from './util/config/getConfig';
 import { OpenAPI } from '@pxweb2/pxweb2-api-client';
+import useAccessibility from './context/useAccessibility';
+import useApp from './context/useApp';
 
 export function App() {
+  const { isTablet } = useApp();
   const config = getConfig();
+  const accessibility = useAccessibility();
   OpenAPI.BASE = config.apiUrl;
 
   const { tableId } = useParams<{ tableId: string }>();
   const [selectedTableId] = useState(tableId ?? 'tab638');
   const [errorMsg] = useState('');
   const [selectedNavigationView, setSelectedNavigationView] =
-    useState<NavigationItem>('filter');
-
+    useState<NavigationItem>(isTablet ? 'none' : 'filter');
+  const [hasFocus, setHasFocus] = useState<NavigationItem>('none');
+  const [openedWithKeyboard, setOpenedWithKeyboard] = useState(false);
   /**
    * Keep state if window screen size is mobile or desktop.
    */
-  const mobileBreakpoint = Number(BreakpointsSmallMaxWidth.replace('px', ''));
-  const [isMobile, setIsMobile] = useState(
-    window.innerWidth <= mobileBreakpoint,
-  );
+
+  const navigationBarRef = useRef<{
+    filter: HTMLButtonElement;
+    view: HTMLButtonElement;
+    edit: HTMLButtonElement;
+    save: HTMLButtonElement;
+    help: HTMLButtonElement;
+  }>(null);
+
+  const hideMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= mobileBreakpoint);
-    };
+    if (hasFocus !== 'none' && navigationBarRef.current) {
+      hideMenuRef.current?.focus();
+    }
+  }, [hasFocus]);
 
-    window.addEventListener('resize', handleResize);
+  useEffect(() => {
+    if (!navigationBarRef.current || !hideMenuRef.current) {
+      return;
+    }
+    let item = null;
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [mobileBreakpoint]);
+    if (selectedNavigationView === 'filter') {
+      item = navigationBarRef.current.filter;
+      accessibility.addFocusOverride(
+        'filterButton',
+        navigationBarRef.current.filter,
+        undefined,
+        hideMenuRef.current,
+      );
+    }
+
+    if (selectedNavigationView === 'view') {
+      item = navigationBarRef.current.view;
+      accessibility.addFocusOverride(
+        'viewButton',
+        navigationBarRef.current.view,
+        undefined,
+        hideMenuRef.current,
+      );
+    }
+    if (selectedNavigationView === 'edit') {
+      item = navigationBarRef.current.edit;
+      accessibility.addFocusOverride(
+        'editButton',
+        navigationBarRef.current.edit,
+        undefined,
+        hideMenuRef.current,
+      );
+    }
+    if (selectedNavigationView === 'save') {
+      item = navigationBarRef.current.save;
+      accessibility.addFocusOverride(
+        'saveButton',
+        navigationBarRef.current.save,
+        undefined,
+        hideMenuRef.current,
+      );
+    }
+    if (selectedNavigationView === 'help') {
+      item = navigationBarRef.current.help;
+      accessibility.addFocusOverride(
+        'helpButton',
+        navigationBarRef.current.help,
+        undefined,
+        hideMenuRef.current,
+      );
+    }
+
+    if (item) {
+      accessibility.addFocusOverride(
+        'hideButton',
+        hideMenuRef.current,
+        item,
+        undefined,
+      );
+    }
+  }, [
+    accessibility,
+    navigationBarRef.current,
+    hideMenuRef.current,
+    selectedNavigationView,
+  ]);
 
   useEffect(() => {
     if (errorMsg !== '') {
@@ -52,10 +123,41 @@ export function App() {
     }
   }, [errorMsg]);
 
-  const changeSelectedNavView = (newSelectedNavView: NavigationItem) => {
-    if (selectedNavigationView === newSelectedNavView) {
+  const changeSelectedNavView = (
+    keyboard: boolean,
+    close: boolean,
+    newSelectedNavView: NavigationItem,
+  ) => {
+    if (close && keyboard) {
+      if (newSelectedNavView !== 'none') {
+        window.setTimeout(() => {
+          // Sorry about this hack, can't justify spending more time on this
+          navigationBarRef.current?.[
+            newSelectedNavView as keyof typeof navigationBarRef.current
+          ].focus();
+          navigationBarRef.current?.[newSelectedNavView].focus();
+        }, 100);
+      }
       setSelectedNavigationView('none');
-    } else {
+      return;
+    }
+
+    if (close && !keyboard) {
+      setSelectedNavigationView('none');
+      setHasFocus('none');
+      return;
+    }
+
+    if (!close && keyboard) {
+      setOpenedWithKeyboard(true);
+      setSelectedNavigationView(newSelectedNavView);
+      setHasFocus(newSelectedNavView);
+      return;
+    }
+
+    if (!close && !keyboard) {
+      setOpenedWithKeyboard(false);
+      setHasFocus(newSelectedNavView);
       setSelectedNavigationView(newSelectedNavView);
     }
   };
@@ -64,10 +166,11 @@ export function App() {
   return (
     <>
       <SkipToMain />
-      {!isMobile && <Header />}{' '}
+      {!isTablet && <Header />}{' '}
       <div className={styles.navigationAndContentContainer}>
-        {!isMobile && (
+        {!isTablet && (
           <NavigationRail
+            ref={navigationBarRef}
             onChange={changeSelectedNavView}
             selected={selectedNavigationView}
           />
@@ -77,16 +180,19 @@ export function App() {
             selectedNavigationView={selectedNavigationView}
             selectedTabId={selectedTableId}
             setSelectedNavigationView={changeSelectedNavView}
+            openedWithKeyboard={openedWithKeyboard}
+            hideMenuRef={hideMenuRef}
           />
           <div className={styles.contentAndFooterContainer}>
-            {isMobile && <Header />}{' '}
+            {isTablet && <Header />}{' '}
             <Presentation selectedTabId={selectedTableId}></Presentation>
             <Footer />
           </div>
         </div>
       </div>
-      {isMobile && (
+      {isTablet && (
         <NavigationBar
+          ref={navigationBarRef}
           onChange={changeSelectedNavView}
           selected={selectedNavigationView}
         />
