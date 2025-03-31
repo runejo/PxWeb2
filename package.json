@@ -6,6 +6,7 @@
     "prepare": "husky",
     "lint": "eslint --fix",
     "test": "npm run test --workspaces",
+    "coverage": "npm run coverage --workspaces",
     "build": "npm run build-style-dictionary && npm run build --workspaces",
     "prettier": "npm run prettier --workspaces",
     "build-storybook": "cd ./packages/pxweb2-ui && storybook build",
