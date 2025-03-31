@@ -9,7 +9,6 @@ interface Resources {
       header: {
         title: 'PxWeb 2.0 [Main]';
         logo: 'PxWeb 2.0';
-        arialabelheader: 'Header navigation';
       };
       skip_to_main: 'Skip to main content';
       footer: {
@@ -67,6 +66,7 @@ interface Resources {
               tag_selected: '{{selected}} of {{total}} selected';
               tag_mandatory: 'Mandatory';
               alert_no_mandatory_values: 'You must select something in the list for the table to be displayed';
+              show_more: 'Show more';
             };
             content: {
               select: {
@@ -174,10 +174,26 @@ interface Resources {
           details: {
             title: 'Details';
             description: 'Description text...';
+            boolean_true: 'Yes';
+            boolean_false: 'No';
+            base_time: 'Base time';
+            update_frequency: 'Update frequency';
+            survey: 'Survey';
+            link: 'Link';
+            copyright: 'Copyright';
+            matrix: 'Matrix';
+            last_updated: 'Last updated';
+            next_update: 'Next update';
+            source: 'Source';
+            official_statistics: 'Official statistics';
+            unit: 'Unit';
+            reference_time: 'Reference time';
           };
           contact: {
             title: 'Contact';
             description: 'Description text...';
+            missing_heading: 'No contact information';
+            missing_text: 'The table has no contact information';
           };
         };
         related: {

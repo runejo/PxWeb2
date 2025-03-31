@@ -59,6 +59,18 @@ function getPxTable(): PxTable {
     updated: new Date('2023-01-14T09:00:05.123Z'),
     variables: variables,
     language: 'en',
+    contacts: [],
+    source: '',
+    infofile: '',
+    decimals: 0,
+    officialStatistics: false,
+    notes: [],
+    matrix: '',
+    subjectCode: '',
+    subjectArea: '',
+    aggregationAllowed: false,
+    contents: '',
+    descriptionDefault: false,
   };
   const table: PxTable = {
     metadata: tableMeta,

@@ -7,8 +7,7 @@
     "title": "مرحبًا بك في PxWeb 2.0",
     "header": {
       "title": "PxWeb 2.0 [Main]",
-      "logo": "بيكس ويب 2.0",
-      "arialabelheader": "اختر اللغة"
+      "logo": "بيكس ويب 2.0"
     },
     "skip_to_main": "انتقل إلى المحتوى الرئيسي",
     "footer": {
@@ -65,7 +64,8 @@
           "header": {
             "tag_selected": "{{selected}} ل {{total}} مختارة",
             "tag_mandatory": "إلزامي",
-            "alert_no_mandatory_values": "يجب عليك تحديد شيء ما في القائمة حتى يتم عرض الجدول"
+            "alert_no_mandatory_values": "يجب عليك تحديد شيء ما في القائمة حتى يتم عرض الجدول",
+            "show_more": "اظهر المزيد"
           },
           "content": {
             "select": {
@@ -172,11 +172,27 @@
         },
         "details": {
           "title": "تفاصيل",
-          "description": "نص الوصف..."
+          "description": "نص الوصف...",
+          "boolean_true": "نعم",
+          "boolean_false": "لا",
+          "base_time": "الوقت الأساسي",
+          "update_frequency": "تردد التحديث",
+          "survey": "استطلاع",
+          "link": "وصلة",
+          "copyright": "حقوق الطبع والنشر",
+          "matrix": "مصفوفة",
+          "last_updated": "آخر تحديث",
+          "next_update": "التحديث القادم",
+          "source": "مصدر",
+          "official_statistics": "الإحصاءات الرسمية",
+          "unit": "وحدة",
+          "reference_time": "وقت المرجع"
         },
         "contact": {
           "title": "اتصال",
-          "description": "نص الوصف..."
+          "description": "نص الوصف...",
+          "missing_heading": "لا يوجد معلومات الاتصال",
+          "missing_text": "الجدول ليس لديه معلومات الاتصال."
         }
       },
       "related": {

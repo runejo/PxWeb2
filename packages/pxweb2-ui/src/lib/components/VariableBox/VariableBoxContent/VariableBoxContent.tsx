@@ -197,7 +197,7 @@ export function VariableBoxContent({
       setAllValuesSelected('true');
     }
   }, [
-    --totalChosenValues,
+    totalChosenValues,
     totalValues,
     checkboxSelectAllText,
     checkboxDeselectAllText,
@@ -293,7 +293,7 @@ export function VariableBoxContent({
   const handleChangingCodeListInVariableBox = (
     selectedItem: SelectOption | undefined,
     varId: string,
-    virtuosoRef: React.RefObject<VirtuosoHandle>,
+    virtuosoRef: React.RefObject<VirtuosoHandle | null>,
   ) => {
     // Call the parent function to change the code list
     onChangeCodeList(selectedItem, varId);
@@ -389,7 +389,9 @@ export function VariableBoxContent({
               onChange={() =>
                 onChangeMixedCheckbox(varId, allValuesSelected, searchedValues)
               }
-              ariaControls={valuesToRender.map((value) => value.code + uniqueId)}
+              ariaControls={valuesToRender.map(
+                (value) => value.code + uniqueId,
+              )}
               strong={true}
               inVariableBox={true}
             />
@@ -565,6 +567,7 @@ export function VariableBoxContent({
             classes['variablebox-content-full-values-list'],
             hasSevenOrMoreValues &&
               classes['variablebox-content-full-values-list-scroll'],
+            hasCodeLists && classes['no-border-radius-top'],
           )}
         >
           <div
