@@ -6,17 +6,15 @@ export default mergeConfig(
   defineConfig({
     test: {
       globals: true,
-      cache: {
-        dir: '../../node_modules/.vitest',
-      },
       environment: 'jsdom',
       include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
       setupFiles: './test/setupTests',
 
       reporters: ['default'],
       coverage: {
+        reporter: ['lcov'],
         reportsDirectory: '../../coverage/apps/pxweb2',
-        provider: 'v8',
+        provider: 'istanbul',
       },
     },
   }),
