@@ -13,8 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     outputs:
-      url: ${{ steps.deploy.outputs.deployment-url }}
+      deployment-url: ${{ steps.deploy.outputs.deployment-url }}
+      alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
     steps:
+      - name: Get branch names
+        id: branch-names
+        uses: tj-actions/branch-names@v8
       - uses: actions/checkout@v4
       - name: deploy
         id: deploy
@@ -24,19 +28,19 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           preCommands: npm install && npm run build
           command: |
-            pages deploy packages/pxweb2/dist --project-name=pxweb2 --branch=Preview
+            pages deploy packages/pxweb2/dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
       - name: Add deployment info to PR description
-        uses: the-wright-jamie/update-pr-info-action@v1
+        uses: jupier/powerful-pr-comment@v0.0.5
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          head-branch-regex: 'pxweb2-\d{2,4}'
-          body-template: |
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          sticky: true
+          body: |
             ## Branch Deployment to Cloudflare Pages
-
-            :articulated_lorry: Link to branch deployment: ${{ steps.deploy.outputs.deployment-url }}
-          body-update-action: "suffix"
+            :articulated_lorry: Preview URL: ${{ steps.deploy.outputs.deployment-url }}
+            :construction: Branch preview URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
   test:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     name: Test
     needs: deploy
     steps:
@@ -55,4 +59,4 @@ jobs:
             firefox
           application-id: ${{ secrets.MABL_APPLICATION_ID}}
           environment-id: ${{ secrets.MABL_ENVIRONMENT_ID}}
-          app-url: ${{needs.deploy.outputs.url}}
+          app-url: ${{needs.deploy.outputs.deployment-url}}
