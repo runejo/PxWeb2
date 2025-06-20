@@ -20,6 +20,19 @@ export interface AlertProps {
   readonly onClick?: () => void;
   readonly className?: string;
   readonly children?: string | React.ReactNode;
+  readonly alertAriaLabel?: string;
+  readonly ariaLive?: 'off' | 'polite' | 'assertive';
+  readonly ariaHasPopup?:
+    | 'false'
+    | 'true'
+    | 'menu'
+    | 'listbox'
+    | 'tree'
+    | 'grid'
+    | 'dialog';
+  readonly role?: React.AriaRole;
+  ref?: React.Ref<HTMLDivElement>;
+  id?: string;
 }
 
 export function Alert({
@@ -32,6 +45,12 @@ export function Alert({
   onClick,
   className = '',
   children,
+  alertAriaLabel,
+  ariaHasPopup = 'false',
+  ariaLive = 'off',
+  role,
+  ref,
+  id,
 }: Readonly<AlertProps>) {
   const cssClasses = className.length > 0 ? ' ' + className : '';
   const { t } = useTranslation();
@@ -42,9 +61,9 @@ export function Alert({
   if (!isVisible) {
     return null;
   }
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Enter') {
+      event.preventDefault();
       onClick && onClick();
     }
   };
@@ -133,7 +152,8 @@ export function Alert({
 
   return (
     <div
-      onKeyDown={clickable ? handleKeyDown : undefined}
+      id={id}
+      aria-label={alertAriaLabel}
       tabIndex={clickable ? 0 : undefined}
       className={
         cl(classes[`alert-${size}`], classes[variant], {
@@ -141,7 +161,11 @@ export function Alert({
         }) + cssClasses
       }
       onClick={clickable ? onClick : undefined}
+      onKeyDown={clickable ? handleKeyDown : undefined}
       style={{ cursor: clickable ? 'pointer' : 'default' }}
+      aria-haspopup={ariaHasPopup}
+      role={role}
+      ref={ref}
     >
       <div className={classes[`alert-section-left-${size}`]}>
         <Icon
@@ -151,7 +175,7 @@ export function Alert({
       </div>
       <div className={cl(classes[`alert-section-middle-${size}`])}>
         {hasheading && (
-          <div className={cl(classes[`alert-heading`])}>
+          <div className={cl(classes[`alert-heading`])} aria-live={ariaLive}>
             <Heading size={headingSize} level={headingLevel}>
               {heading}
             </Heading>
@@ -194,9 +218,8 @@ export function Alert({
           </div>
         )}
         {clickable && (
-          <div className={cl(classes['alert-arrow-wrapper'])}>
-            {' '}
-            <Icon iconName={iconRight} className=""></Icon>
+          <div className={cl(classes['alert-arrow'])}>
+            <Icon iconName={iconRight} />
           </div>
         )}
       </div>

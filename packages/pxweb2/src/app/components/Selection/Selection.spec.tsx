@@ -1,14 +1,15 @@
+import React from 'react';
+import { render } from '@testing-library/react';
+import { vi } from 'vitest';
+
 import { renderWithProviders } from '../../util/testing-utils';
 import Selection from './Selection';
 import { AccessibilityProvider } from '../../context/AccessibilityProvider';
-import React from 'react';
-import { render } from '@testing-library/react';
 import {
   TableDataProvider,
   TableDataContext,
 } from '../../context/TableDataProvider';
 import { VariablesProvider } from '../../context/VariablesProvider';
-import { vi } from 'vitest';
 
 describe('Selection', () => {
   it('should throw an error when triggered', () => {
@@ -21,8 +22,6 @@ describe('Selection', () => {
       }, [context]);
       return null;
     };
-    {
-    }
 
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
@@ -38,9 +37,7 @@ describe('Selection', () => {
     }).toThrow('Simulated error');
     consoleErrorSpy.mockRestore();
   });
-});
 
-describe('Selection', () => {
   it('should render successfully', () => {
     const { baseElement } = renderWithProviders(
       <AccessibilityProvider>
