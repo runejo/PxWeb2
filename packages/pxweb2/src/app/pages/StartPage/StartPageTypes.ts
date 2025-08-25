@@ -1,20 +1,36 @@
 import { Table } from '@pxweb2/pxweb2-api-client';
-import { PathItem } from '../../util/startPageFilters';
 
 export enum ActionType {
   RESET_FILTERS = 'RESET_FILTERS',
   ADD_FILTER = 'ADD_FILTER',
+  ADD_SEARCH_FILTER = 'ADD_SEARCH_FILTER',
   REMOVE_FILTER = 'REMOVE_FILTER',
   UPDATE_TABLES = 'UPDATE_TABLES',
   SET_ERROR = 'SET_ERROR',
   SET_LOADING = 'SET_LOADING',
 }
 
+export type FilterType = 'timeUnit' | 'subject' | 'yearRange' | 'search';
+
 export type Filter = {
-  type: 'timeUnit' | 'subject';
+  type: FilterType;
   value: string;
   label: string;
   index: number;
+  uniqueId?: string;
+};
+
+export type PathItem = {
+  id: string;
+  label: string;
+  children?: PathItem[];
+  count?: number;
+  uniqueId?: string;
+};
+
+export type YearRange = {
+  min: number;
+  max: number;
 };
 
 export type StartPageState = {
@@ -23,16 +39,20 @@ export type StartPageState = {
   availableFilters: {
     subjectTree: PathItem[];
     timeUnits: Map<string, number>;
+    yearRange: YearRange;
   };
   activeFilters: Filter[];
   loading: boolean;
   error: string;
   originalSubjectTree: PathItem[];
+  subjectOrderList: string[];
+  lastUsedYearRange: YearRange | null;
 };
 
 export type ReducerActionTypes =
   | ResetFilterAction
   | AddFilterAction
+  | AddSearchFilterAction
   | RemoveFilterAction
   | UpdateTablesAction
   | SetErrorAction
@@ -40,7 +60,7 @@ export type ReducerActionTypes =
 
 type RemoveFilterAction = {
   type: ActionType.REMOVE_FILTER;
-  payload: string;
+  payload: { value: string; type: string; uniqueId?: string };
 };
 
 type ResetFilterAction = {
@@ -51,6 +71,11 @@ type ResetFilterAction = {
 type AddFilterAction = {
   type: ActionType.ADD_FILTER;
   payload: Filter[];
+};
+
+type AddSearchFilterAction = {
+  type: ActionType.ADD_SEARCH_FILTER;
+  payload: { text: string; language: string };
 };
 
 type UpdateTablesAction = {
@@ -71,4 +96,5 @@ type SetLoadingAction = {
 export type StartPageFilters = {
   timeUnits: Map<string, number>;
   subjectTree: PathItem[];
+  yearRange: YearRange;
 };
