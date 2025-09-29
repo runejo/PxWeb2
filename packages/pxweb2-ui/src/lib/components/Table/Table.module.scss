@@ -148,9 +148,6 @@
       width: fit-content;
     }
   }
-  tr th::first-letter {
-    text-transform: capitalize;
-  }
   tr.firstdim th {
     border-top: 1px solid var(--px-color-border-default);
     font-family: PxWeb-font, sans-serif;
@@ -250,5 +247,10 @@
   .mobileRowHeadFirstValueOfSecondLastStub > th,
   .mobileRowHeadFirstValueOfSecondLastStub > td {
     padding-top: 28px;
+  }
+
+  .emptyTableData {
+    background: var(--px-color-surface-moderate);
+    border: none;
   }
 }

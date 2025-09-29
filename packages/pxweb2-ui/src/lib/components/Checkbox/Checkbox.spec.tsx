@@ -102,7 +102,7 @@ describe('Checkboxes', () => {
           id="test-mixed"
           text="Select All"
           value="false"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
         />,
       );
@@ -230,7 +230,7 @@ describe('Checkboxes', () => {
           id="test-mixed"
           text="Select All"
           value="false"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
         />,
       );
@@ -248,7 +248,7 @@ describe('Checkboxes', () => {
           id="test-mixed"
           text="Select All"
           value="false"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
           inVariableBox={true}
         />,
@@ -266,7 +266,7 @@ describe('Checkboxes', () => {
           id="test-mixed"
           text="Select All"
           value="false"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
           tabIndex={2}
         />,
@@ -281,7 +281,7 @@ describe('Checkboxes', () => {
           id="test-mixed"
           text="Select All"
           value="false"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
           strong={true}
         />,
@@ -299,7 +299,7 @@ describe('Checkboxes', () => {
           id="test-mixed"
           text="Select All"
           value="false"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
           noMargin={true}
         />,
@@ -311,13 +311,13 @@ describe('Checkboxes', () => {
       expect(checkmark?.className).toMatch(/checkmarkWithoutMargin/);
     });
 
-    it('should set correct aria attributes', () => {
+    it('should set correct aria attributes when value is true', () => {
       const { getByRole } = render(
         <MixedCheckbox
           id="test-mixed"
           text="Select All"
           value="true"
-          onChange={() => {}}
+          onChange={vi.fn()}
           ariaControls={['item1', 'item2']}
         />,
       );
@@ -325,6 +325,42 @@ describe('Checkboxes', () => {
       const checkbox = getByRole('checkbox');
 
       expect(checkbox.getAttribute('aria-checked')).toBe('true');
+      expect(checkbox.getAttribute('aria-labelledby')).toBe('test-mixed-label');
+      expect(checkbox.getAttribute('aria-controls')).toBe('item1 item2');
+    });
+
+    it('should set correct aria attributes when value is false', () => {
+      const { getByRole } = render(
+        <MixedCheckbox
+          id="test-mixed"
+          text="Select All"
+          value="false"
+          onChange={vi.fn()}
+          ariaControls={['item1', 'item2']}
+        />,
+      );
+
+      const checkbox = getByRole('checkbox');
+
+      expect(checkbox.getAttribute('aria-checked')).toBe('false');
+      expect(checkbox.getAttribute('aria-labelledby')).toBe('test-mixed-label');
+      expect(checkbox.getAttribute('aria-controls')).toBe('item1 item2');
+    });
+
+    it('should set correct aria attributes when value is mixed', () => {
+      const { getByRole } = render(
+        <MixedCheckbox
+          id="test-mixed"
+          text="Select All"
+          value="mixed"
+          onChange={vi.fn()}
+          ariaControls={['item1', 'item2']}
+        />,
+      );
+
+      const checkbox = getByRole('checkbox');
+
+      expect(checkbox.getAttribute('aria-checked')).toBe('false');
       expect(checkbox.getAttribute('aria-labelledby')).toBe('test-mixed-label');
       expect(checkbox.getAttribute('aria-controls')).toBe('item1 item2');
     });

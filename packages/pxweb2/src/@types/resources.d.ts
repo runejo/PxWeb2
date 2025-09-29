@@ -7,8 +7,9 @@ interface Resources {
     common: {
       title: 'PxWeb 2.0';
       header: {
-        title: 'PxWeb 2.0 [Main]';
         logo: 'PxWeb 2.0';
+        logo_alt: 'To the front page';
+        language_selector: 'Language';
       };
       not_found: {
         page_not_found: {
@@ -55,19 +56,36 @@ interface Resources {
         warning: 'Warning:';
         error: 'Error:';
       };
+      status_messages: {
+        welcome: "Welcome to the new PxWeb 2.0! We're still improving to help you find and use the numbers you need 📊✨";
+        drawer_view: 'Graph display is under construction.';
+        drawer_save_file: 'More file formats are in the works.';
+        drawer_save_api: 'API query feature is under construction.';
+        drawer_edit: 'More tools for editing the table are under construction.';
+        drawer_help: 'No content will be added here. The help button must link directly to its own help pages.';
+        tab_definitions: 'The content of this tab is under construction.';
+      };
+      breadcrumbs: {
+        aria_label_breadcrumb: 'Breadcrumb';
+        breadcrumb_root_title: 'Home';
+        show_more_breadcrumbs: 'Show more';
+      };
     };
     start_page: {
       header: 'Welcome to PxWeb 2.0';
       ingress: "Looking for the perfect table? Use the search field and filters to dig into the numbers you need. Whether you're hunting for trends, facts, or just an oddly satisfying dataset, PxWeb 2.0 has your back.";
       more_about_label: 'More about PxWeb 2.0';
       more_about_text: 'More about Text EN';
-      search_placeholder: 'Search in PxWeb 2.0';
+      result_hidden_header: 'Result';
+      search_label: 'Search in PxWeb 2.0';
+      search_placeholder: 'Search for table names or variables';
       filter: {
         button: 'Filter';
         back: 'Back';
         show_results: 'Show {{value}} results';
         close: 'Close filter';
         header: 'Filter';
+        list_filters_aria: 'Selected filters';
         remove_all_filter: 'Remove all filters';
         remove_filter_aria: 'Remove filter, {{value}}';
         subject: 'Topic';
@@ -81,6 +99,8 @@ interface Resources {
           clear_selection: 'Clear selection';
         };
         variabel: 'Variable';
+        variabel_search: 'Search for variable';
+        variable_count: 'Showing {{countShown}} of {{countTotal}} variables';
         frequency: {
           annual: 'Year';
           monthly: 'Month';
@@ -91,6 +111,7 @@ interface Resources {
         };
       };
       table: {
+        card_description: '{{title}}. Most recently updated on {{updatedDate}} Published from {{yearFrom}} to {{yearTo}}. Updated {{frequency}}. Table number is {{tableNumber}}.';
         number_of_tables: '<strong>{{count}}</strong> tables';
         number_of_tables_found: '<strong>{{count}}</strong> tables found';
         updated_label: 'Updated';
@@ -102,11 +123,6 @@ interface Resources {
       };
     };
     presentation_page: {
-      header: {
-        searchbutton: 'Search';
-        languagebutton: 'languages';
-        statistics: 'Statistikkbanken';
-      };
       sidemenu: {
         arialabeltoolsidemenu: 'Tool menu for table';
         hide: 'Hide';
@@ -221,6 +237,7 @@ interface Resources {
           api: {
             title: 'API';
             description: 'Description text...';
+            query: 'API query';
           };
         };
         help: {
@@ -228,7 +245,8 @@ interface Resources {
         };
       };
       main_content: {
-        arialabelbreadcrumb: 'Breadcrumb';
+        expand_view: 'Expand view';
+        shrink_view: 'Shrink view';
         last_updated: 'Last updated';
         show_details: 'Show details';
         dynamic_table_title: '{{table_content_type}} by {{table_content_label_first_part}} and {{table_content_label_last_part}}';

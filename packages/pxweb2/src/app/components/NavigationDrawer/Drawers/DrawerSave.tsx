@@ -13,6 +13,7 @@ import {
   Radio,
   RadioOption,
   VartypeEnum,
+  Alert,
 } from '@pxweb2/pxweb2-ui';
 import {
   ApiError,
@@ -90,7 +91,7 @@ export const SaveQueryCreateButton: React.FC<SaveQueryButtonProps> = ({
       ref={buttonRef}
       variant="primary"
       size="medium"
-      iconPosition="left"
+      iconPosition="start"
       icon={'Link'}
       onClick={onClick}
     >
@@ -108,7 +109,7 @@ export const SaveQueryLoadingButton: React.FC<SaveQueryButtonProps> = ({
       ref={buttonRef}
       variant="primary"
       size="medium"
-      iconPosition="left"
+      iconPosition="start"
       loading={true}
       aria-busy={true}
       aria-label={t('presentation_page.sidemenu.save.savequery.loadingStatus')}
@@ -129,6 +130,7 @@ export const SaveQueryCopyButton: React.FC<SaveQueryButtonProps> = ({
         variant="primary"
         size="medium"
         icon={'Copy'}
+        iconPosition="start"
         onClick={onClick}
       >
         {t('presentation_page.sidemenu.save.savequery.copyButton')}
@@ -152,7 +154,7 @@ export const SaveQueryCopiedButton: React.FC<SaveQueryButtonProps> = ({
         ref={buttonRef}
         variant="primary"
         size="medium"
-        iconPosition="left"
+        iconPosition="start"
         icon={'Check'}
         onClick={onClick}
         aria-label={t('presentation_page.sidemenu.save.savequery.copyButton')}
@@ -494,6 +496,9 @@ export function DrawerSave({ tableId }: DrawerSaveProps) {
             </li>
           ))}
         </ul>
+        <Alert variant="info" className={classes.alert + ' ' + classes.file}>
+          {t('common.status_messages.drawer_save_file')}
+        </Alert>
       </ContentBox>
       <ContentBox title={t('presentation_page.sidemenu.save.savequery.title')}>
         <div className={classes.informationCardWrapper}>
@@ -536,6 +541,11 @@ export function DrawerSave({ tableId }: DrawerSaveProps) {
           )}
           <SqScreenReaderStatus queryId={queryId} isCopied={isCopied} />
         </div>
+      </ContentBox>
+      <ContentBox title={t('presentation_page.sidemenu.save.api.query')}>
+        <Alert variant="info" className={classes.alert}>
+          {t('common.status_messages.drawer_save_api')}
+        </Alert>
       </ContentBox>
     </>
   );

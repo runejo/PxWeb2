@@ -5,7 +5,7 @@ import cl from 'clsx';
 import styles from './TableViewer.module.scss';
 import { Selection } from '../../components/Selection/Selection';
 import { Presentation } from '../../components/Presentation/Presentation';
-import useLocalizeDocumentAttributes from '../../../i18n/useLocalizeDocumentAttributes';
+import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary';
 import { Header } from '../../components/Header/Header';
 import { NavigationItem } from '../../components/NavigationMenu/NavigationItem/NavigationItemType';
 import NavigationRail from '../../components/NavigationMenu/NavigationRail/NavigationRail';
@@ -19,13 +19,13 @@ import useApp from '../../context/useApp';
 import { AccessibilityProvider } from '../../context/AccessibilityProvider';
 import { VariablesProvider } from '../../context/VariablesProvider';
 import { TableDataProvider } from '../../context/TableDataProvider';
-import ErrorBoundary from '../../components/ErrorBoundry/ErrorBoundry';
+import { ErrorPageTableViewer } from '../ErrorPage/ErrorPage';
 
 export function TableViewer() {
   const {
     isMobile,
     isTablet,
-    isLargeDesktop,
+    isXLargeDesktop,
     skipToMainFocused,
     setSkipToMainFocused,
   } = useApp();
@@ -41,10 +41,11 @@ export function TableViewer() {
   const [selectedTableId] = useState(tableId ?? 'tab638');
   const [errorMsg] = useState('');
   const [selectedNavigationView, setSelectedNavigationView] =
-    useState<NavigationItem>(isLargeDesktop ? 'selection' : 'none');
+    useState<NavigationItem>(isXLargeDesktop ? 'selection' : 'none');
   const [hasFocus, setHasFocus] = useState<NavigationItem>('none');
   const [openedWithKeyboard, setOpenedWithKeyboard] = useState(false);
   const outerContainerRef = useRef<HTMLDivElement | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const navigationBarRef = useRef<{
     selection: HTMLButtonElement;
@@ -54,7 +55,7 @@ export function TableViewer() {
     help: HTMLButtonElement;
   }>(null);
 
-  const hideMenuRef = useRef<HTMLDivElement>(null);
+  const hideMenuRef = useRef<HTMLButtonElement>(null);
   const skipToMainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -189,7 +190,6 @@ export function TableViewer() {
       setSelectedNavigationView(newSelectedNavView);
     }
   };
-  useLocalizeDocumentAttributes();
 
   const isSmallScreen = isTablet === true || isMobile === true;
 
@@ -205,7 +205,7 @@ export function TableViewer() {
       >
         {isSmallScreen ? (
           <>
-            <Header />
+            <Header stroke={true} />
             <NavigationBar
               ref={navigationBarRef}
               onChange={changeSelectedNavView}
@@ -233,13 +233,17 @@ export function TableViewer() {
           />
           <div
             ref={!isSmallScreen ? outerContainerRef : undefined}
-            className={styles.contentAndFooterContainer}
+            className={cl(styles.contentAndFooterContainer, {
+              [styles.expanded]: isExpanded,
+            })}
           >
             <Presentation
               scrollRef={outerContainerRef}
               selectedTabId={selectedTableId}
+              isExpanded={isExpanded}
+              setIsExpanded={setIsExpanded}
             ></Presentation>
-            <Footer />
+            <Footer containerRef={outerContainerRef} />
           </div>
         </div>
       </div>
@@ -250,7 +254,7 @@ export function TableViewer() {
 function Render() {
   return (
     <AccessibilityProvider>
-      <ErrorBoundary>
+      <ErrorBoundary fallback={<ErrorPageTableViewer />}>
         <VariablesProvider>
           <TableDataProvider>
             <TableViewer />

@@ -4,12 +4,15 @@ import {
   BreakpointsXsmallMaxWidth,
   BreakpointsMediumMaxWidth,
   BreakpointsLargeMaxWidth,
+  BreakpointsXlargeMaxWidth,
 } from '@pxweb2/pxweb2-ui';
 
 // Define the type for the context
 export type AppContextType = {
+  getSavedQueryId: () => string;
   isInitialized: boolean;
-  isLargeDesktop: boolean;
+  isXLargeDesktop: boolean;
+  isXXLargeDesktop: boolean;
   isTablet: boolean;
   isMobile: boolean;
   skipToMainFocused: boolean;
@@ -20,8 +23,10 @@ export type AppContextType = {
 
 // Create the context with default values
 export const AppContext = createContext<AppContextType>({
+  getSavedQueryId: () => '',
   isInitialized: false,
-  isLargeDesktop: false,
+  isXLargeDesktop: false,
+  isXXLargeDesktop: false,
   isTablet: false,
   isMobile: false,
   skipToMainFocused: false,
@@ -46,10 +51,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
    * Keep state if window screen size is mobile, pad or desktop.
    */
   const largeBreakpoint = Number(BreakpointsLargeMaxWidth.replace('px', ''));
+  const xLargeBreakpoint = Number(BreakpointsXlargeMaxWidth.replace('px', ''));
   const tabletBreakpoint = Number(BreakpointsMediumMaxWidth.replace('px', ''));
   const mobileBreakpoint = Number(BreakpointsXsmallMaxWidth.replace('px', ''));
-  const [isLargeDesktop, setIsLargeDesktop] = useState(
+  const [isXLargeDesktop, setIsXLargeDesktop] = useState(
     window.innerWidth > largeBreakpoint,
+  );
+  const [isXXLargeDesktop, setIsXXLargeDesktop] = useState(
+    window.innerWidth > xLargeBreakpoint,
   );
   const [isTablet, setIsTablet] = useState(
     window.innerWidth <= tabletBreakpoint,
@@ -61,7 +70,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   // Use effect to set the isMobile and isTablet state
   useEffect(() => {
     const handleResize = () => {
-      setIsLargeDesktop(window.innerWidth > largeBreakpoint);
+      setIsXLargeDesktop(window.innerWidth > largeBreakpoint);
+      setIsXXLargeDesktop(window.innerWidth > xLargeBreakpoint);
       setIsTablet(window.innerWidth <= tabletBreakpoint);
       setIsMobile(window.innerWidth <= mobileBreakpoint);
     };
@@ -71,12 +81,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [mobileBreakpoint, tabletBreakpoint, largeBreakpoint]);
+  }, [mobileBreakpoint, tabletBreakpoint, largeBreakpoint, xLargeBreakpoint]);
+
+  const getSavedQueryId = React.useCallback(() => {
+    let savedQueryId: string = '';
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('sq')) {
+        savedQueryId = params.get('sq') ?? '';
+      }
+    }
+    return savedQueryId;
+  }, []);
 
   const cachedValues = useMemo(
     () => ({
+      getSavedQueryId,
       isInitialized,
-      isLargeDesktop,
+      isXLargeDesktop,
+      isXXLargeDesktop,
       isTablet,
       isMobile,
       skipToMainFocused,
@@ -85,8 +108,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setTitle,
     }),
     [
+      getSavedQueryId,
       isInitialized,
-      isLargeDesktop,
+      isXLargeDesktop,
+      isXXLargeDesktop,
       isTablet,
       isMobile,
       skipToMainFocused,
