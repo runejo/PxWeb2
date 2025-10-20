@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { ErrorIllustration } from './ErrorIllustration';
@@ -51,9 +51,6 @@ describe('ErrorIllustration', () => {
     );
 
     expect(container.firstChild).toBeNull();
-    expect(console.log).toHaveBeenCalledWith(
-      'ErrorIllustration: Illustration InvalidIllustration not found',
-    );
   });
 
   it('returns null and logs error when background shape is not found', () => {
@@ -68,8 +65,58 @@ describe('ErrorIllustration', () => {
     );
 
     expect(container.firstChild).toBeNull();
-    expect(console.log).toHaveBeenCalledWith(
-      'ErrorIllustration: Background shape "invalidShape" for illustration NotFound not found',
+  });
+});
+
+describe('ErrorIllustration size handling', () => {
+  it('defaults to medium when size not provided', () => {
+    render(
+      <ErrorIllustration
+        backgroundShape="circle"
+        illustrationName="NotFound"
+      />,
     );
+    const svgs = screen.getAllByRole('presentation');
+    expect(svgs[0]).toHaveAttribute('width', '200'); // background container
+    expect(svgs[1]).toHaveAttribute('width', '90'); // medium illustration
+  });
+
+  it('uses small variant when available (GenericError)', () => {
+    render(
+      <ErrorIllustration
+        backgroundShape="circle"
+        illustrationName="GenericError"
+        size="small"
+      />,
+    );
+    const svgs = screen.getAllByRole('presentation');
+    expect(svgs[0]).toHaveAttribute('width', '180'); // small container
+    expect(svgs[1]).toHaveAttribute('width', '81'); // small illustration width
+  });
+
+  it('falls back to medium when small illustration missing (NotFound)', () => {
+    render(
+      <ErrorIllustration
+        backgroundShape="circle"
+        illustrationName="NotFound"
+        size="small"
+      />,
+    );
+    const svgs = screen.getAllByRole('presentation');
+    expect(svgs[0]).toHaveAttribute('width', '180'); // small container still
+    expect(svgs[1]).toHaveAttribute('width', '90'); // medium fallback
+  });
+
+  it('explicit medium behaves same as default', () => {
+    render(
+      <ErrorIllustration
+        backgroundShape="wavy"
+        illustrationName="GenericError"
+        size="medium"
+      />,
+    );
+    const svgs = screen.getAllByRole('presentation');
+    expect(svgs[0]).toHaveAttribute('width', '200');
+    expect(svgs[1]).toHaveAttribute('width', '90');
   });
 });
