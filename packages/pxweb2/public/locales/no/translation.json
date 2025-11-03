@@ -246,7 +246,7 @@
     "main_content": {
       "expand_view": "Utvid visning",
       "shrink_view": "Minimer visning",
-      "last_updated": "Sist oppdatert",
+      "last_updated": "Oppdatert",
       "show_details": "Vis detaljer",
       "dynamic_table_title": "{{table_content_type}} etter {{table_content_label_first_part}} og {{table_content_label_last_part}}",
       "table": {
@@ -299,7 +299,7 @@
           "link": "Lenke",
           "copyright": "Opphavsrett",
           "matrix": "Matrise",
-          "last_updated": "Sist oppdatert",
+          "last_updated": "Oppdatert",
           "next_update": "Neste oppdatering",
           "source": "Kilde",
           "official_statistics": "Offisiell statistikk",
@@ -328,8 +328,8 @@
     }
   },
   "date": {
-    "simple_date": "{{value, datetime}}",
-    "simple_date_with_time": "{{value, datetime(year: 'numeric'; month: 'numeric'; day: 'numeric'; hour: 'numeric'; minute: 'numeric')}}"
+    "simple_date": "{{value, datetime(day: '2-digit'; month: '2-digit'; year: 'numeric')}}",
+    "simple_date_with_time": "{{value, datetime(year: 'numeric'; month: '2-digit'; day: '2-digit'; hour: 'numeric'; minute: 'numeric')}}"
   },
   "number": {
     "simple_number": "{{value, pxNumber}}",

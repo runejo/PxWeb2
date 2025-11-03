@@ -99,13 +99,10 @@ export const Search = forwardRef<SearchHandle, SearchProps>(
               variableBoxTopBorderOverride,
           })}
         >
-          <Icon
-            iconName="MagnifyingGlass"
-            className={classes.searchIcon}
-            ariaLabel={ariaLabelIconText}
-          ></Icon>
+          <Icon iconName="MagnifyingGlass" ariaLabel={ariaLabelIconText}></Icon>
           <input
             type="text"
+            {...(labelText ? { 'aria-label': labelText } : {})}
             ref={combinedRef}
             className={cl(
               classes[`bodyshort-medium`],
