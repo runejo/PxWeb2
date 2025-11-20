@@ -279,9 +279,6 @@ export function VariableBoxContent({
             searchPlaceHolder={t(
               'presentation_page.side_menu.selection.variablebox.search.placeholder',
             )}
-            ariaLabelIconText={t(
-              'presentation_page.side_menu.selection.variablebox.search.aria_label_icon_text',
-            )}
             arialLabelClearButtonText={t(
               'presentation_page.side_menu.selection.variablebox.search.aria_label_clear_button_text',
             )}
@@ -510,7 +507,6 @@ export function VariableBoxContent({
                 total: totalValues,
               },
             )}
-            className={cl(classes['variablebox-content-values-only-list'])}
             ref={valuesOnlyList}
           >
             {' '}
