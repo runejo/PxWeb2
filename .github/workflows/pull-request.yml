@@ -1,4 +1,4 @@
-name: Build and deploy to Cloudflare, test with Mabl
+name: Build and Deploy on Pull Request
 
 on:
   pull_request:
@@ -85,20 +85,23 @@ jobs:
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v9
-      - name: Download a single artifact
+      - name: Download all build artifacts
         uses: actions/download-artifact@v5
-      - run: ls -lR
+
+      - name: Prepare two deployments with different config.js
+        run: |
+          mv dist-22.x default-dist
+          cp -r default-dist alternative-dist
+          curl -o alternative-dist/config.js https://www.ssb.no/statbank2/config/config.js
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          #preCommands: npm install && npm run build
           command: |
-            pages deploy dist-22.x --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
-
-
+            pages deploy default-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
+            pages deploy alternative-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
         with:
