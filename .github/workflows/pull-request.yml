@@ -93,8 +93,8 @@ jobs:
           mv dist-22.x default-dist
           mkdir alternative-dist
           cp -r default-dist alternative-dist/statbank2
-          curl -o alternative-dist/statbank2/index.html https://www.ssb.no/statbank2/
           curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
+          sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/statbank2/index.html
           echo "/ /statbank2/ 301" > alternative-dist/_redirects
       - name: Deploy
         id: deploy
@@ -122,8 +122,9 @@ jobs:
             ## Branch Deployment to Cloudflare Pages
             :articulated_lorry: Preview URL: ${{ steps.deploy.outputs.deployment-url }}
             :construction: Branch preview URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
-            :articulated_lorry: Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
-            :construction: Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
+
+            :delivery_truck: Alternative Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
+            :construction: Alternative Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
 
   test:
     runs-on: ubuntu-latest
