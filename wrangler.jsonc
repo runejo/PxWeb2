@@ -1,8 +1,9 @@
 {
   "name": "my-worker",
-  "compatibility_date": "2025-04-01",
+  "compatibility_date": "2025-11-21",
   "assets": {
     "directory": "./packages/pxweb2/dist/",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application"
   }
 }
