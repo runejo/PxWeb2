@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    name: Node CI Tests
+    name: Run build, tests, and code analysis
 
     runs-on: ubuntu-latest
 
@@ -67,7 +67,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: dist-22.x
-
+      - run: ls -lR
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -92,7 +92,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.draft == false && github.actor != 'dependabot[bot]' }}
-    name: Test
+    name: Run Mabl tests
     needs: deploy
     steps:
       - uses: actions/checkout@v5
