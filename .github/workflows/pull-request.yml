@@ -79,10 +79,6 @@ jobs:
             pages deploy packages/pxweb2/dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
 
 
-
-      - clone norsk config
-      - run: |
-          sed /slkdjflds/fksdfldjsk/g
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
         with:
