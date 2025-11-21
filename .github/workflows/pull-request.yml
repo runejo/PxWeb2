@@ -91,11 +91,11 @@ jobs:
       - name: Prepare two deployments with different configurations
         run: |
           mv dist-22.x default-dist
-          cp -r default-dist alternative-dist
-          curl -o alternative-dist/index.html https://www.ssb.no/statbank2/
-          curl -o alternative-dist/config/config.js https://www.ssb.no/statbank2/config/config.js
-          cd alternative-dist
-          ln -s statbank2 .
+          mkdir alternative-dist
+          cp -r default-dist alternative-dist/statbank2
+          curl -o alternative-dist/statbank2/index.html https://www.ssb.no/statbank2/
+          curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
+          echo "/ /statbank2/ 301" > alternative-dist/_redirects
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -104,7 +104,15 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
             pages deploy default-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
+      - name: Alternative Deploy
+        id: alt-deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: |
             pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
+
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
         with:
@@ -114,6 +122,8 @@ jobs:
             ## Branch Deployment to Cloudflare Pages
             :articulated_lorry: Preview URL: ${{ steps.deploy.outputs.deployment-url }}
             :construction: Branch preview URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+            :articulated_lorry: Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
+            :construction: Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
 
   test:
     runs-on: ubuntu-latest
