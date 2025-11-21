@@ -37,20 +37,18 @@ jobs:
           name: dist-${{ matrix.node-version }}
           path: packages/pxweb2/dist
 
-
-
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    - name: SonarQube Scan
-      if: ${{ github.actor != 'dependabot[bot]' }}
-      uses: SonarSource/sonarqube-scan-action@v6
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarQube Scan
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker:
     name: Docker Build
@@ -112,7 +110,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
-            pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
+            deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
 
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
