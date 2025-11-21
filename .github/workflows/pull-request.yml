@@ -88,11 +88,12 @@ jobs:
       - name: Download all build artifacts
         uses: actions/download-artifact@v5
 
-      - name: Prepare two deployments with different config.js
+      - name: Prepare two deployments with different configurations
         run: |
           mv dist-22.x default-dist
           cp -r default-dist alternative-dist
-          curl -o alternative-dist/config.js https://www.ssb.no/statbank2/config/config.js
+          curl -o alternative-dist/index.html https://www.ssb.no/statbank2/index.html
+          curl -o alternative-dist/config/config.js https://www.ssb.no/statbank2/config/config.js
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
