@@ -93,9 +93,11 @@ jobs:
           mv dist-22.x default-dist
           mkdir alternative-dist
           cp -r default-dist alternative-dist/statbank2
+          mv alternative-dist/statbank2/_headers alternative-dist/
+          echo "/ /statbank2/ 301" > alternative-dist/_redirects
+          echo "/statbank2/* /statbank2/index.html 200" >> alternative-dist/_redirects
           curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
           sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/statbank2/index.html
-          echo "/ /statbank2/ 301" > alternative-dist/_redirects
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -123,8 +125,8 @@ jobs:
             :articulated_lorry: Preview URL: ${{ steps.deploy.outputs.deployment-url }}
             :construction: Branch preview URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
 
-            :delivery_truck: Alternative Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
-            :construction: Alternative Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
+            :truck: Alternative Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
+            :construction_worker: Alternative Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
 
   test:
     runs-on: ubuntu-latest
