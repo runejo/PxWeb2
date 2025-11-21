@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
 
     if: ${{ github.actor != 'dependabot[bot]' }}
-    name: Deploy to Cloudflare Pages
+    name: Deploy to Cloudflare Workers
     outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
       alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
@@ -123,10 +123,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           sticky: true
           body: |
-            ## Branch Deployment to Cloudflare Pages
+            ## Branch Deployment to Cloudflare Workers
             :articulated_lorry: Preview URL: ${{ steps.deploy.outputs.deployment-url }}
             :construction: Branch preview URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
-
             :truck: Alternative Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
             :construction_worker: Alternative Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
 
