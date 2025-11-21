@@ -92,7 +92,7 @@ jobs:
         run: |
           mv dist-22.x default-dist
           cp -r default-dist alternative-dist
-          curl -o alternative-dist/index.html https://www.ssb.no/statbank2/index.html
+          curl -o alternative-dist/index.html https://www.ssb.no/statbank2/
           curl -o alternative-dist/config/config.js https://www.ssb.no/statbank2/config/config.js
       - name: Deploy
         id: deploy
@@ -102,7 +102,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
             pages deploy default-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
-            pages deploy alternative-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
+            pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
         with:
