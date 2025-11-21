@@ -94,6 +94,8 @@ jobs:
           cp -r default-dist alternative-dist
           curl -o alternative-dist/index.html https://www.ssb.no/statbank2/
           curl -o alternative-dist/config/config.js https://www.ssb.no/statbank2/config/config.js
+          cd alternative-dist
+          ln -s statbank2 .
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
