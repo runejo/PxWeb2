@@ -95,7 +95,6 @@ jobs:
           cp -r default-dist alternative-dist/statbank2
           mv alternative-dist/statbank2/_headers alternative-dist/
           echo "/ /statbank2/ 301" > alternative-dist/_redirects
-          echo "/statbank2/* /statbank2/index.html 200" >> alternative-dist/_redirects
           curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
           sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/statbank2/index.html
       - name: Deploy
