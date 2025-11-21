@@ -41,7 +41,7 @@ jobs:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: SonarQube Scan
@@ -80,6 +80,9 @@ jobs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
       alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
     steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v9
