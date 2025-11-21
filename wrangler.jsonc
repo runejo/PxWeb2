@@ -1,6 +1,7 @@
 {
   "name": "my-worker",
   "compatibility_date": "2025-11-21",
+  "workers_dev": true,
   "assets": {
     "directory": "./packages/pxweb2/dist/",
     //"binding": "ASSETS",
