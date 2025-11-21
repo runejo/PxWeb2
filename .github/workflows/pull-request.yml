@@ -34,6 +34,15 @@ jobs:
       - run: npm run build
       - run: npm run coverage
 
+      - name: Upload dist folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.node-version }}
+          path: packages/pxweb2/dist
+
+
+
+      # SonarQube Scan as separate job step
       - name: SonarQube Scan
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: SonarSource/sonarqube-scan-action@v6
@@ -54,6 +63,11 @@ jobs:
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v9
+      - name: Download a single artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: dist-22.x
+
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -63,6 +77,12 @@ jobs:
           #preCommands: npm install && npm run build
           command: |
             pages deploy packages/pxweb2/dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
+
+
+
+      - clone norsk config
+      - run: |
+          sed /slkdjflds/fksdfldjsk/g
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
         with:
