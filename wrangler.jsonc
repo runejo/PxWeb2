@@ -2,14 +2,11 @@
   "name": "pxweb2",
   "compatibility_date": "2025-11-21",
   "workers_dev": true,
+  "route": "/statbank2/*",
   "assets": {
     //"directory": "./packages/pxweb2/dist/",
     "directory": "./alternative-dist/",
-    //"binding": "ASSETS",
     "not_found_handling": "single-page-application",
   },
   "preview_urls": true
 }
-
-
-
