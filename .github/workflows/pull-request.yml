@@ -31,12 +31,6 @@ jobs:
       - run: npm run build-artifact
       - run: npm run coverage
 
-      - name: Upload dist folder
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ matrix.node-version }}
-          path: packages/pxweb2/dist
-
   sonarqube:
     needs: build
     name: SonarQube Analysis
@@ -100,13 +94,11 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
             pages deploy --branch=${{ steps.branch-names.outputs.current_branch }}
-      - name: Download all build artifacts
-        uses: actions/download-artifact@v5
-      - name: Prepare two deployments with different configurations
+
+      - name: Prepare alternative deployment with different configuration
         run: |
-          mv dist-22.x default-dist
           mkdir alternative-dist
-          cp -r default-dist alternative-dist/statbank2
+          cp -r packages/pxweb2/dist alternative-dist/statbank2
           mv alternative-dist/statbank2/_headers alternative-dist/
           mv alternative-dist/statbank2/index.html alternative-dist/
           echo "/ /statbank2/ 301" > alternative-dist/_redirects
