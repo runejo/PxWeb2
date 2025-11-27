@@ -95,9 +95,10 @@ jobs:
           mkdir alternative-dist
           cp -r default-dist alternative-dist/statbank2
           mv alternative-dist/statbank2/_headers alternative-dist/
+          mv alternative-dist/statbank2/index.html alternative-dist/
           echo "/ /statbank2/ 301" > alternative-dist/_redirects
           curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
-          sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/statbank2/index.html
+          sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/index.html
       - run: ls -la
       - name: Deploy
         id: deploy
@@ -116,6 +117,8 @@ jobs:
           #accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           #command: |
           #  pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
+          command: |
+            wrangler versions upload --preview-alias staging
 
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
