@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
 
     if: ${{ github.actor != 'dependabot[bot]' }}
-    name: Deploy to Cloudflare Workers
+    name: Deploy to Cloudflare Pages
     outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
       alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
@@ -88,14 +88,12 @@ jobs:
         with:
           node-version: 22.x
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build-artifact
+      - run: npm ci && npm run build-artifact
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v9
       - name: Download all build artifacts
         uses: actions/download-artifact@v5
-      - run: ls -la
       - name: Prepare two deployments with different configurations
         run: |
           mv dist-22.x default-dist
@@ -106,7 +104,6 @@ jobs:
           echo "/ /statbank2/ 301" > alternative-dist/_redirects
           curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
           sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/index.html
-      - run: ls -la
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -114,7 +111,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
-            pages deploy default-dist --branch=${{ steps.branch-names.outputs.current_branch }} --commit-dirty=true
+            pages deploy --branch=${{ steps.branch-names.outputs.current_branch }}
       - name: Alternative Deploy
         id: alt-deploy
         uses: cloudflare/wrangler-action@v3
@@ -131,7 +128,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           sticky: true
           body: |
-            ## Branch Deployment to Cloudflare Workers
+            ## Branch Deployment to Cloudflare Pages
             :articulated_lorry: Preview URL: ${{ steps.deploy.outputs.deployment-url }}
             :construction: Branch preview URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
             :truck: Alternative Preview URL: ${{ steps.alt-deploy.outputs.deployment-url }}
