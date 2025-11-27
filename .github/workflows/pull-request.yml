@@ -108,7 +108,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
-            pages deploy default-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }}
+            pages deploy default-dist --project-name=pxweb2 --branch=${{ steps.branch-names.outputs.current_branch }} --commit-dirty=true
       - name: Alternative Deploy
         id: alt-deploy
         uses: cloudflare/wrangler-action@v3
@@ -116,7 +116,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
-            pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
+            pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }} --commit-dirty=true
           #command: |
           #  versions upload --preview-alias staging
 
