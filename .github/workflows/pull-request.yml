@@ -38,6 +38,7 @@ jobs:
           path: packages/pxweb2/dist
 
   sonarqube:
+    needs: build
     name: SonarQube Analysis
     runs-on: ubuntu-latest
     steps:
