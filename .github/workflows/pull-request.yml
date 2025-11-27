@@ -92,6 +92,14 @@ jobs:
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v9
+      - name: Deploy
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: |
+            pages deploy --branch=${{ steps.branch-names.outputs.current_branch }}
       - name: Download all build artifacts
         uses: actions/download-artifact@v5
       - name: Prepare two deployments with different configurations
@@ -102,16 +110,8 @@ jobs:
           mv alternative-dist/statbank2/_headers alternative-dist/
           mv alternative-dist/statbank2/index.html alternative-dist/
           echo "/ /statbank2/ 301" > alternative-dist/_redirects
-          curl -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
+          curl -s -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
           sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/index.html
-      - name: Deploy
-        id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: |
-            pages deploy --branch=${{ steps.branch-names.outputs.current_branch }}
       - name: Alternative Deploy
         id: alt-deploy
         uses: cloudflare/wrangler-action@v3
