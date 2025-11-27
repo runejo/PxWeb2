@@ -1,12 +1,14 @@
 {
+  "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "pxweb2",
   "compatibility_date": "2025-11-21",
+  "pages_build_output_dir": "./packages/pxweb2/dist2",
   "workers_dev": true,
-  //"route": "/statbank2/*",
   "assets": {
-    //"directory": "./packages/pxweb2/dist/",
-    "directory": "./alternative-dist/",
-    "not_found_handling": "single-page-application"
+    "directory": "./packages/pxweb2/dist",
+    //"directory": "./packages/pxweb2/dist2",
+    //"directory": "./alternative-dist/",
+    "not_found_handling": "single-page-application",
   },
   "preview_urls": true
 }
