@@ -118,7 +118,7 @@ jobs:
           #command: |
           #  pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
           command: |
-            wrangler versions upload --preview-alias staging
+            versions upload --preview-alias staging
 
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
