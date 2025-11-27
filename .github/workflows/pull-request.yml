@@ -102,13 +102,14 @@ jobs:
 
       - name: Prepare alternative deployment with different configuration
         run: |
-          mkdir alternative-dist
-          cp -r packages/pxweb2/dist alternative-dist/statbank2
-          mv alternative-dist/statbank2/_headers alternative-dist/
-          mv alternative-dist/statbank2/index.html alternative-dist/
-          echo "/ /statbank2/ 301" > alternative-dist/_redirects
-          curl -s -o alternative-dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
-          sed -i 's|<base href="/"|<base href="/statbank2/"|' alternative-dist/index.html
+          mkdir dist
+          cp -r packages/pxweb2/dist dist/statbank2
+          mv dist/statbank2/_headers dist/
+          mv dist/statbank2/index.html dist/
+          echo "/ /statbank2/ 301" > dist/_redirects
+          curl -s -o dist/statbank2/config/config.js https://www.ssb.no/statbank2/config/config.js
+          sed -i 's|<base href="/"|<base href="/statbank2/"|' dist/index.html
+
       - name: Alternative Deploy
         id: alt-deploy
         uses: cloudflare/wrangler-action@v3
@@ -116,8 +117,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
-            pages deploy alternative-dist --branch=alternative-${{ steps.branch-names.outputs.current_branch }} --commit-dirty=true
-          # versions upload --preview-alias staging
+            pages deploy dist --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
 
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
