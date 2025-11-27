@@ -114,11 +114,11 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           wranglerVersion: 4.50.0
-          #accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          #command: |
-          #  pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: |
-            versions upload --preview-alias staging
+            pages deploy alternative-dist --project-name=pxweb2 --branch=alternative-${{ steps.branch-names.outputs.current_branch }}
+          #command: |
+          #  versions upload --preview-alias staging
 
       - name: Add deployment info to PR description
         uses: jupier/powerful-pr-comment@v0.0.5
