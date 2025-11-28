@@ -32,11 +32,11 @@ jobs:
       - run: npm run coverage
 
   sonarqube:
+    name: SonarQube Analysis
     needs: build
     runs-on: ubuntu-latest
 
     if: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' }}
-    name: SonarQube Analysis
     steps:
       - uses: actions/checkout@v5
         with:
@@ -69,11 +69,11 @@ jobs:
           push: false
 
   deploy:
+    name: Deploy to Cloudflare Pages
     needs: build
     runs-on: ubuntu-latest
 
     if: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request' }}
-    name: Deploy to Cloudflare Pages
     outputs:
       deployment-url: ${{ steps.deploy.outputs.deployment-url }}
       alias-url: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
@@ -133,10 +133,11 @@ jobs:
             :construction_worker: Alternative Branch preview URL: ${{ steps.alt-deploy.outputs.pages-deployment-alias-url }}
 
   test:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.draft == false && github.actor != 'dependabot[bot]' }}
     name: Run Mabl tests
     needs: deploy
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event.pull_request.draft == false && github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v6
       - name: Regression test against feature branch
