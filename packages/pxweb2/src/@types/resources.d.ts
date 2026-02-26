@@ -13,6 +13,13 @@ interface Resources {
         breadcrumb_root_title: 'Home';
         show_more_breadcrumbs: 'Show more';
       };
+      code_snippet: {
+        copied_button_label: 'Code copied to clipboard';
+        copy_button_label: 'Copy code for ';
+        copy_button_tooltip: 'Copy code';
+        unwrap_code_button_label: 'Unwrap lines';
+        wrap_code_button_label: 'Wrap lines';
+      };
       errors: {
         generic: {
           action_text: 'Refresh';
@@ -60,6 +67,7 @@ interface Resources {
         tab_definitions: 'The content of this tab is under construction.';
         welcome: "Welcome to the new PxWeb 2.0! We're still improving to help you find and use the figures you need 📊✨";
       };
+      switch_language_landmark: 'Select language';
       title: 'PxWeb 2.0';
     };
     date: {
@@ -78,6 +86,10 @@ interface Resources {
       simple_number_with_zero_decimal: '{{value, pxNumber(minimumFractionDigits: 0; maximumFractionDigits: 0;)}}';
     };
     presentation_page: {
+      common: {
+        table_title_and: 'and';
+        table_title_by: 'by';
+      };
       footer: {
         contact: 'Contact';
         copyright: 'Copyright © 2024 Statistics Sweden and Statistics Norway';
@@ -95,8 +107,17 @@ interface Resources {
             title: 'Contact';
           };
           definitions: {
-            description: 'The table is part of the statistics {{statistics}}';
-            title: 'Definitions';
+            about_statistics: {
+              description: "Definitions, explanations, and other information related to the table can be found on the table's statistics page.";
+              link_text_definitions: 'Definitions and explanations';
+              link_text_homepage: 'Statistics page';
+              title: 'About the statistics';
+            };
+            metadata: {
+              description: 'Here you can find links to variable definitions and classifications used in the table.';
+              title: 'Metadata';
+            };
+            panel_title: 'Definitions';
           };
           details: {
             base_time: 'Base time';
@@ -135,7 +156,6 @@ interface Resources {
           };
           title: 'Information';
         };
-        dynamic_table_title: '{{table_content_type}} by {{table_content_label_first_part}} and {{table_content_label_last_part}}';
         expand_view: 'Expand view';
         last_updated: 'Updated';
         related: {
@@ -205,9 +225,17 @@ interface Resources {
         hide: 'Hide';
         save: {
           api: {
-            description: 'Description text...';
+            description: 'Here you’ll find the API query for the table. Use GET for small queries (under about 2 100 characters) and POST for larger or more complex ones.';
+            get_button_text: 'GET';
+            link_text: 'Learn more about using the API';
+            link_url: 'https://www.pxtools.net/PxWebApi/documentation/user-guide/';
+            post_body_text: 'POST BODY';
+            post_button_text: 'POST';
             query: 'API query';
+            select_format: 'Select format';
+            select_http_method_aria: 'Select HTTP request method';
             title: 'API';
+            url_text: 'URL';
           };
           file: {
             formats: {
@@ -216,7 +244,7 @@ interface Resources {
               html: 'HTML (.html)';
               jsonstat2: 'JSON-stat2 (.json)';
               parquet: 'Parquet (.parquet)';
-              px: 'PC-Axis (.px)';
+              px: 'Px-file (.px)';
             };
             loading_announcement: 'File is still being processed. Please wait.';
             title: 'Download as file';
@@ -275,7 +303,7 @@ interface Resources {
               tag_selected: '{{selected}} of {{total}} selected';
             };
             search: {
-              aria_label_clear_button_text: 'Clear search icon';
+              aria_label_clear_button_text: 'Clear';
               label: 'Search';
               placeholder: 'Search in list';
             };

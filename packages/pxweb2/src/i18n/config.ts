@@ -19,8 +19,12 @@ const supportedLanguages: string[] = config.language.supportedLanguages.map(
   (item) => item.shorthand,
 );
 
+const positionInPath = config.language.positionInPath ?? 'after';
+
 const lookingForLanguagePos =
-  (config.baseApplicationPath.match(/[\\/]/g) || []).length - 1;
+  positionInPath === 'before'
+    ? 0
+    : (config.baseApplicationPath.match(/[\\/]/g) || []).length - 1;
 
 const initPromise = i18n
   .use(HttpApi)
@@ -44,6 +48,7 @@ const initPromise = i18n
       lookupFromPathIndex: lookingForLanguagePos,
       caches: [], // Do not cache the language in local storage or cookies.
     },
+    showSupportNotice: false, // Disable the Locize support notice in the console.
   });
 
 i18n.services.formatter?.add('pxNumber', pxNumber);

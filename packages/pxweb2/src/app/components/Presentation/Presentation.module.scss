@@ -15,6 +15,12 @@
     .tableContainer {
       width: 100cqw;
       overflow-x: auto;
+
+      &:focus-visible {
+        outline: 2px solid var(--px-color-border-focus-outline);
+        outline-offset: -2px;
+        border-radius: var(--px-border-radius-medium);
+      }
     }
   }
 
@@ -49,6 +55,7 @@
 .fadeTable table {
   opacity: 0.6;
   transition: 'opacity 0.3s ease-in-out';
+  pointer-events: none;
 }
 
 .gradientContainer {

@@ -30,12 +30,14 @@ function PivotButton({
   const { t } = useTranslation();
   const tableData = useTableData();
   const { pivot, buildTableTitle } = tableData;
+  const { setIsFadingTable } = useTableData();
 
   // Live region text for screen readers after activation
   const [statusMessage, setStatusMessage] = useState('');
   const [announceOnNextChange, setAnnounceOnNextChange] = useState(false);
 
   const handleClick = async () => {
+    setIsFadingTable(true);
     setAnnounceOnNextChange(true);
     setLoadingPivotType(pivotType);
     await new Promise((resolve) => setTimeout(resolve, 1000)); // Allow spinner to render
@@ -56,8 +58,7 @@ function PivotButton({
     if (!announceOnNextChange) {
       return;
     }
-
-    const { firstTitlePart, lastTitlePart } = buildTableTitle(stub, heading);
+    const { firstTitlePart, lastTitlePart } = buildTableTitle();
     const message = t(screenReaderAnnouncementKey, '', {
       first_variables: firstTitlePart,
       last_variable: lastTitlePart,

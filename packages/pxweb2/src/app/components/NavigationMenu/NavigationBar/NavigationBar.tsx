@@ -1,10 +1,12 @@
 import React from 'react';
+import cl from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { LazyMotion, MotionConfig } from 'motion/react';
 
 import styles from './NavigationBar.module.scss';
 import { NavigationItem } from '../NavigationItem/NavigationItemType';
 import { Item } from '../NavigationItem/NavigationItem';
+import { Heading } from '@pxweb2/pxweb2-ui';
 
 // Lazy load the animation features
 const loadFeatures = () =>
@@ -21,43 +23,52 @@ interface NavigationBarProps {
 
 export const NavigationBar = React.forwardRef<
   {
-    selection: HTMLButtonElement;
-    view: HTMLButtonElement;
-    edit: HTMLButtonElement;
-    save: HTMLButtonElement;
-    help: HTMLButtonElement;
+    selection: React.RefObject<HTMLButtonElement | null>;
+    view: React.RefObject<HTMLButtonElement | null>;
+    edit: React.RefObject<HTMLButtonElement | null>;
+    save: React.RefObject<HTMLButtonElement | null>;
+    help: React.RefObject<HTMLButtonElement | null>;
   },
   NavigationBarProps
 >(({ selected, onChange }, ref) => {
   const { t } = useTranslation();
-  const refs = {
-    selection: React.useRef<HTMLButtonElement>(null),
-    view: React.useRef<HTMLButtonElement>(null),
-    edit: React.useRef<HTMLButtonElement>(null),
-    save: React.useRef<HTMLButtonElement>(null),
-    help: React.useRef<HTMLButtonElement>(null),
-  };
 
-  React.useImperativeHandle(ref, () => ({
-    selection: refs.selection.current!,
-    view: refs.view.current!,
-    edit: refs.edit.current!,
-    save: refs.save.current!,
-    help: refs.help.current!,
-  }));
+  const selectionRef = React.useRef<HTMLButtonElement>(null);
+  const viewRef = React.useRef<HTMLButtonElement>(null);
+  const editRef = React.useRef<HTMLButtonElement>(null);
+  const saveRef = React.useRef<HTMLButtonElement>(null);
+  const helpRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      selection: selectionRef,
+      view: viewRef,
+      edit: editRef,
+      save: saveRef,
+      help: helpRef,
+    }),
+    [],
+  );
 
   return (
     <div className={styles.navigationBar}>
       <LazyMotion features={loadFeatures}>
         <MotionConfig reducedMotion="user">
-          <nav
-            aria-label={t(
-              'presentation_page.side_menu.aria_label_tool_side_menu',
-            )}
-          >
-            <ul className={styles.navigationBarList}>
+          <nav aria-labelledby="navBarHeading">
+            <Heading
+              level={'2'}
+              className={cl(styles['sr-only'])}
+              id="navBarHeading"
+            >
+              {t('presentation_page.side_menu.aria_label_tool_side_menu')}
+            </Heading>
+            <ul
+              className={styles.navigationBarList}
+              aria-labelledby="navBarHeading"
+            >
               <Item
-                ref={refs.selection}
+                ref={selectionRef}
                 parentName="navBar"
                 label={t('presentation_page.side_menu.selection.title')}
                 selected={selected === 'selection'}
@@ -71,7 +82,7 @@ export const NavigationBar = React.forwardRef<
                 }}
               />
               <Item
-                ref={refs.view}
+                ref={viewRef}
                 parentName="navBar"
                 label={t('presentation_page.side_menu.view.title')}
                 selected={selected === 'view'}
@@ -85,7 +96,7 @@ export const NavigationBar = React.forwardRef<
                 }}
               />
               <Item
-                ref={refs.edit}
+                ref={editRef}
                 parentName="navBar"
                 label={t('presentation_page.side_menu.edit.title')}
                 selected={selected === 'edit'}
@@ -99,7 +110,7 @@ export const NavigationBar = React.forwardRef<
                 }}
               />
               <Item
-                ref={refs.save}
+                ref={saveRef}
                 parentName="navBar"
                 label={t('presentation_page.side_menu.save.title')}
                 selected={selected === 'save'}
@@ -113,7 +124,7 @@ export const NavigationBar = React.forwardRef<
                 }}
               />
               <Item
-                ref={refs.help}
+                ref={helpRef}
                 parentName="navBar"
                 label={t('presentation_page.side_menu.help.title')}
                 selected={selected === 'help'}

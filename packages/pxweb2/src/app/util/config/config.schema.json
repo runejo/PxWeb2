@@ -35,6 +35,11 @@
         "showDefaultLanguageInPath": {
           "description": "If true, the default language will be shown in the website path. If false, the default language will not be shown in the path.",
           "type": "boolean"
+        },
+        "positionInPath": {
+          "description": "Determines the position of the language code in the URL path. 'before' places it before the baseApplicationPath, 'after' places it after.",
+          "type": "string",
+          "enum": ["before", "after"]
         }
       },
       "required": ["supportedLanguages", "defaultLanguage", "fallbackLanguage"]
@@ -62,6 +67,10 @@
     "maxDataCells": {
       "type": "number",
       "description": "The maximum number of cells allowed to be shown in a table"
+    },
+    "useDynamicContentInTitle": {
+      "type": "boolean",
+      "description": "Set to true to use dynamic content texts in the table title. If false, contents text at table level will be used."
     },
     "showBreadCrumbOnStartPage": {
       "type": "boolean",

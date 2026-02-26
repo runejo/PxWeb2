@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState, useRef } from 'react';
+import { useEffect, useContext, useState, useRef, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import type { TFunction } from 'i18next';
@@ -25,7 +25,10 @@ import {
   MarkdownRenderer,
 } from '@pxweb2/pxweb2-ui';
 import { type Table } from '@pxweb2/pxweb2-api-client';
-import { AccessibilityProvider } from '../../context/AccessibilityProvider';
+import {
+  AccessibilityProvider,
+  AccessibilityContext,
+} from '../../context/AccessibilityProvider';
 import { Header } from '../../components/Header/Header';
 import { Footer } from '../../components/Footer/Footer';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
@@ -45,6 +48,7 @@ import { getAllTables, queryTablesByKeyword } from '../../util/tableHandler';
 import { tableListIsReadyToRender } from '../../util/startPageRender';
 import useFilterUrlSync from '../../util/hooks/useFilterUrlSync';
 import StartpageDetails from '../../components/StartPageDetails/StartPageDetails';
+import { getLanguagePath } from '../../util/language/getLanguagePath';
 import { useLocaleContent } from '../../util/hooks/useLocaleContent';
 import type {
   LocaleContent,
@@ -54,6 +58,7 @@ import {
   createBreadcrumbItems,
   BreadcrumbItemsParm,
 } from '../../util/createBreadcrumbItems';
+import { createTableListSEO } from '../../util/seo/tableListSEO';
 
 const StartPage = () => {
   const { t, i18n } = useTranslation();
@@ -61,12 +66,15 @@ const StartPage = () => {
   const { state, dispatch } = useContext(FilterContext);
   useFilterUrlSync(state, dispatch, t);
 
+  const accessibility = useContext(AccessibilityContext);
+
   const paginationCount = 15;
   const isSmallScreen = isTablet === true || isMobile === true;
   const topicIconComponents = useTopicIcons();
-  const hasUrlParams =
-    typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).toString().length > 0;
+  const hasUrlParams = globalThis.window
+    ? new URLSearchParams(globalThis.window.location.search).toString().length >
+      0
+    : false;
 
   const [isFilterOverlayOpen, setIsFilterOverlayOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(paginationCount);
@@ -85,6 +93,7 @@ const StartPage = () => {
   const hasFetchedRef = useRef(false);
   const hasEverHydratedRef = useRef(false);
   const previousLanguage = useRef('');
+  const filterOverlayRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
 
@@ -187,6 +196,66 @@ const StartPage = () => {
       document.body.style.overflow = '';
     };
   }, [isFilterOverlayOpen, isSmallScreen]);
+
+  // Register and unregister the filter overlay as a modal with the app’s AccessibilityContext,
+  // so global accessibility behaviors (like closing via Escape) apply on small screens.
+  useEffect(() => {
+    if (isSmallScreen && isFilterOverlayOpen) {
+      accessibility?.addModal('filterOverlay', () =>
+        setIsFilterOverlayOpen(false),
+      );
+    } else {
+      accessibility?.removeModal('filterOverlay');
+    }
+    return () => accessibility?.removeModal('filterOverlay');
+  }, [accessibility, isSmallScreen, isFilterOverlayOpen]);
+
+  // Trap keyboard focus inside the mobile filter overlay while it’s open, ensuring accessible tabbing.
+  // Runs only when accessibility is available, the overlay is open (isFilterOverlayOpen),
+  // and the overlay’s container ref (filterOverlayRef) is set.
+  useEffect(() => {
+    if (!accessibility || !isFilterOverlayOpen || !filterOverlayRef.current) {
+      return;
+    }
+
+    //filterOverlayRef is a ref to the overlay root DOM element
+    const container = filterOverlayRef.current;
+
+    // selects elements that are typically focusable via keyboard
+    //.filter((el) => el.offsetParent !== null) removes elements that are not currently visible / not in layout. This avoids trapping focus on hidden controls.
+    const focusable = Array.from(
+      container.querySelectorAll<HTMLElement>(
+        'a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => el.offsetParent !== null);
+
+    // Define first and last focusable elements, with fallback to back button if none found
+    const first = focusable[0] || filterBackButtonRef.current || null;
+    const last = focusable.at(-1) || filterBackButtonRef.current || null;
+
+    // Register focus overrides for the first and last focusable elements
+    // to create a focus trap within the overlay
+    if (first && last) {
+      accessibility?.addFocusOverride(
+        'filterOverlay-first',
+        first,
+        last,
+        undefined,
+      );
+      accessibility?.addFocusOverride(
+        'filterOverlay-last',
+        last,
+        undefined,
+        first,
+      );
+    }
+
+    // Cleanup focus overrides when the overlay is closed or dependencies change
+    return () => {
+      accessibility?.removeFocusOverride('filterOverlay-first');
+      accessibility?.removeFocusOverride('filterOverlay-last');
+    };
+  }, [accessibility, isFilterOverlayOpen]);
 
   useEffect(() => {
     if (visibleCount === lastVisibleCount && isPaginating) {
@@ -332,10 +401,15 @@ const StartPage = () => {
 
       const config = getConfig();
       const language = i18n.language;
-      const showLangInPath =
-        config.language.showDefaultLanguageInPath ||
-        language !== config.language.defaultLanguage;
-      const langPrefix = showLangInPath ? `/${language}` : '';
+      const tablePath = getLanguagePath(
+        `/table/${table.id}`,
+        language,
+        config.language.supportedLanguages,
+        config.language.defaultLanguage,
+        config.language.showDefaultLanguageInPath,
+        config.baseApplicationPath,
+        config.language.positionInPath,
+      );
       const discontinued = table.discontinued;
 
       let cardRef: React.RefObject<HTMLDivElement | null> | undefined;
@@ -345,11 +419,19 @@ const StartPage = () => {
         cardRef = lastVisibleCardRef;
       }
 
+      let lastPeriodString: string | undefined = table.lastPeriod?.slice(0, 4);
+      if (
+        table.timeUnit?.toLowerCase() === 'other' &&
+        table.lastPeriod?.slice(4, 5) === '-'
+      ) {
+        lastPeriodString = table.lastPeriod?.slice(5, 9);
+      }
+
       return (
         <TableCard
           key={table.id}
           title={`${table.label}`}
-          href={() => navigate(`${langPrefix}/table/${table.id}`)}
+          href={() => navigate(tablePath)}
           updatedLabel={
             table.updated ? t('start_page.table.updated_label') : undefined
           }
@@ -360,10 +442,7 @@ const StartPage = () => {
                 })
               : undefined
           }
-          period={`${table.firstPeriod?.slice(0, 4)}–${table.lastPeriod?.slice(
-            0,
-            4,
-          )}`}
+          period={`${table.firstPeriod?.slice(0, 4)}–${lastPeriodString}`}
           frequency={frequencyLabel}
           tableId={`${table.id}`}
           icon={getTopicIcon(table)}
@@ -377,7 +456,7 @@ const StartPage = () => {
                 })
               : undefined,
             yearFrom: table.firstPeriod?.slice(0, 4),
-            yearTo: table.lastPeriod?.slice(0, 4),
+            yearTo: lastPeriodString,
             frequency: frequencyLabel,
             tableNumber: table.id,
           })}
@@ -464,10 +543,10 @@ const StartPage = () => {
 
   // Debounce the dispatch for search filter, so it waits a few moments for typing to finish
   const debouncedDispatch = useRef(
-    debounce(async (value: string) => {
+    debounce(async (value: string, language: string) => {
       let tableIds: string[] = [];
       if (value.length > 0) {
-        const searchedTables = await queryTablesByKeyword(value, i18n.language);
+        const searchedTables = await queryTablesByKeyword(value, language);
         tableIds = searchedTables.map((table: Table) => table.id);
       }
       dispatch({
@@ -481,7 +560,7 @@ const StartPage = () => {
 
   const updateQueryFilter = (value: string) => {
     setIsFadingTableList(true);
-    debouncedDispatch(value);
+    debouncedDispatch(value, i18n.language);
   };
 
   const renderPagination = () => {
@@ -569,6 +648,11 @@ const StartPage = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className={styles.filterOverlay}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="filterOverlayTitle"
+            aria-describedby="filterOverlayContent"
+            ref={filterOverlayRef}
           >
             <div className={styles.filterOverlayHeader}>
               <Button
@@ -578,10 +662,15 @@ const StartPage = () => {
                 onClick={() => setIsFilterOverlayOpen(false)}
                 ref={filterBackButtonRef}
               />
-              <Heading size="medium">{t('start_page.filter.header')}</Heading>
+              <Heading size="medium" id="filterOverlayTitle">
+                {t('start_page.filter.header')}
+              </Heading>
             </div>
 
-            <div className={styles.filterOverlayContent}>
+            <div
+              className={styles.filterOverlayContent}
+              id="filterOverlayContent"
+            >
               <FilterSidebar onFilterChange={handleFilterChange} />
             </div>
 
@@ -621,39 +710,9 @@ const StartPage = () => {
     );
   };
 
-  const renderTableListSEO = () => {
-    return (
-      <nav
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          left: '-9999px',
-          width: '1px',
-          height: '1px',
-          overflow: 'hidden',
-        }}
-      >
-        <h2>TableList(SEO)</h2>
-        <ul>
-          {state.availableTables.map((table) => {
-            const config = getConfig();
-            const language = i18n.language;
-            const showLangInPath =
-              config.language.showDefaultLanguageInPath ||
-              language !== config.language.defaultLanguage;
-            const langPrefix = showLangInPath ? `/${language}` : '';
-            return (
-              <li key={table.id}>
-                <a href={`${langPrefix}/table/${table.id}`} tabIndex={-1}>
-                  {table.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    );
-  };
+  const renderMemoizedTableListSEO = useMemo(() => {
+    return createTableListSEO(i18n.language, state.availableTables);
+  }, [i18n.language, state.availableTables]);
 
   const renderBreadCrumb = () => {
     if (showBreadCrumb) {
@@ -826,7 +885,7 @@ const StartPage = () => {
               </div>
             </div>
           </div>
-          {renderTableListSEO()}
+          {state.availableTables.length > 0 && renderMemoizedTableListSEO}
         </main>
         <div className={cl(styles.footerContent)}>
           <div className={cl(styles.container)}>

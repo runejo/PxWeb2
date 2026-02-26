@@ -4,10 +4,12 @@ export type Config = {
     defaultLanguage: string;
     fallbackLanguage: string;
     showDefaultLanguageInPath: boolean;
+    positionInPath: 'before' | 'after';
   };
   baseApplicationPath: string;
   apiUrl: string;
   maxDataCells: number;
+  useDynamicContentInTitle: boolean;
   showBreadCrumbOnStartPage: boolean;
   specialCharacters: string[];
   variableFilterExclusionList: { [propName: string]: string[] };

@@ -24,16 +24,10 @@ export type SelectProps = {
   onChange: (selectedItem: SelectOption | undefined) => void;
   tabIndex?: number;
   className?: string;
-  addModal: (name: string, closeFunction: () => void) => void;
-  removeModal: (name: string) => void;
+  addModal?: (name: string, closeFunction: () => void) => void;
+  removeModal?: (name: string) => void;
   codeListLabelId?: string;
 };
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function openOptions(options: SelectOption[]) {
-  // NOSONAR: Keep for future use
-  // const optionsStr = options.map((option) => option.label).join('\n');
-}
 
 export function Select({
   variant = 'default',
@@ -61,12 +55,12 @@ export function Select({
         <DefaultSelect
           hideLabel={hideLabel}
           label={label}
-          options={ops}
           placeholder={placeholder}
+          options={ops}
           selectedOption={selectedOption}
-          onChange={onChange}
           tabIndex={tabIndex}
           className={cssClasses}
+          onChange={onChange}
         />
       )}
       {variant === 'inVariableBox' && (
@@ -82,8 +76,18 @@ export function Select({
           onChange={onChange}
           tabIndex={tabIndex}
           className={cssClasses}
-          addModal={addModal}
-          removeModal={removeModal}
+          addModal={
+            addModal ??
+            (() => {
+              /* empty */
+            })
+          }
+          removeModal={
+            removeModal ??
+            (() => {
+              /* empty */
+            })
+          }
           codeListLabelId={codeListLabelId}
         />
       )}
@@ -95,23 +99,23 @@ type DefaultSelectProps = Pick<
   SelectProps,
   | 'hideLabel'
   | 'label'
-  | 'options'
   | 'placeholder'
+  | 'options'
   | 'selectedOption'
-  | 'onChange'
   | 'tabIndex'
   | 'className'
+  | 'onChange'
 >;
 
 function DefaultSelect({
   hideLabel,
   label,
-  options,
   placeholder,
+  options,
   selectedOption,
-  onChange,
-  tabIndex,
+  tabIndex = 0,
   className = '',
+  onChange,
 }: Readonly<DefaultSelectProps>) {
   const cssClasses = className.length > 0 ? ' ' + className : '';
 
@@ -126,27 +130,51 @@ function DefaultSelect({
           {label}
         </Label>
       </div>
-      <div
-        className={cl(classes.contentStyle)}
-        tabIndex={tabIndex}
-        onClick={() => {
-          openOptions(options); // TODO: Get option
-          onChange(options[0]); // TODO: Use selected option
-        }}
-        onKeyUp={(event) => {
-          if (event.key === ' ' || event.key === 'Enter') {
-            openOptions(options); // TODO: Get option
-            onChange(options[0]); // TODO: Use selected option
+
+      <div className={cl(classes.selectWrapper)}>
+        <select
+          aria-label={label}
+          className={cl(classes.optionLayout, classes['bodyshort-medium'])}
+          onChange={(e) => {
+            const next = options.find(
+              (o) => String(o.value) === e.target.value,
+            );
+            onChange?.(next);
+          }}
+          defaultValue={
+            selectedOption ? String(selectedOption.value) : undefined
           }
-        }}
-      >
-        <BodyShort
-          size="medium"
-          className={cl(classes.optionLayout, classes.optionTypography)}
         >
-          {selectedOption ? selectedOption.label : placeholder}
-        </BodyShort>
-        <Icon iconName="ChevronDown" className={cl(classes.iconColor)}></Icon>
+          {placeholder && (
+            <option
+              value=""
+              disabled
+              hidden
+              className={cl(classes['bodyshort-medium'])}
+              {...(selectedOption ? {} : { selected: true })}
+            >
+              {placeholder}
+            </option>
+          )}
+          {options.map((o) => (
+            <option
+              key={String(o.value)}
+              value={String(o.value)}
+              className={cl(classes['bodyshort-medium'])}
+              tabIndex={tabIndex}
+              // Use uncontrolled select with initial value from selectedOption
+              defaultValue={
+                selectedOption ? String(selectedOption.value) : undefined
+              }
+            >
+              {o.label}
+            </option>
+          ))}
+        </select>
+        <Icon
+          iconName="ChevronDown"
+          className={cl(classes.iconColor, classes.iconPositionAbsolute)}
+        ></Icon>
       </div>
     </div>
   );
@@ -244,7 +272,7 @@ function VariableBoxSelect({
   const programmaticFocusRef = useRef<boolean>(false);
 
   useEffect(() => {
-    if (!isModalOpen) {
+    if (isModalOpen === false) {
       removeModal('VariableBoxSelect');
     } else {
       addModal('VariableBoxSelect', () => {
@@ -310,7 +338,13 @@ function VariableBoxSelect({
             {selectedItem ? selectedItem.label : placeholder}
           </BodyShort>
         </div>
-        <Icon iconName={chevronIcon} className={cl(classes.iconColor)}></Icon>
+        <Icon
+          iconName={chevronIcon}
+          className={cl(
+            classes.iconColor,
+            languageDirection === 'rtl' ? classes.rtl : classes.ltr,
+          )}
+        ></Icon>
       </div>
       <div className={cl(classes.divider)}></div>
       {isModalOpen && (

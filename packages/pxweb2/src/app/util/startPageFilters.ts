@@ -45,6 +45,7 @@ export function organizePaths(paths: PathItem[][]): PathItem[] {
           children: [],
           count: 1,
           uniqueId: fullId,
+          sortCode: item.sortCode,
         };
         currentLevel.push(newItem);
         currentLevel = newItem.children!;
@@ -266,15 +267,18 @@ export function getYearRangeFromPeriod(period: string): [number, number] {
 
   const rangeMatch = rangeRegex.exec(period);
   if (rangeMatch) {
-    return [parseInt(rangeMatch[1], 10), parseInt(rangeMatch[2], 10)];
+    return [
+      Number.parseInt(rangeMatch[1], 10),
+      Number.parseInt(rangeMatch[2], 10),
+    ];
   }
 
   const yearMatch = singleYearRegex.exec(period);
   if (yearMatch) {
-    const year = parseInt(yearMatch[1], 10);
+    const year = Number.parseInt(yearMatch[1], 10);
     return [year, year];
   }
-  return [NaN, NaN];
+  return [Number.NaN, Number.NaN];
 }
 
 export function flattenSubjectTreeToList(subjectTree: PathItem[]): string[] {
@@ -474,6 +478,63 @@ export function sortTimeUnit(allTimeUnits: Set<string>): string[] {
   });
 }
 
+/**
+ * Parses a non-negative integer sort code from a string.
+ * - Trims whitespace.
+ * - Accepts only digits (e.g., "0", "12", "0012").
+ * - Returns +Infinity for missing/invalid values so they sort last.
+ */
+function parseSortCode(sortCode: string | undefined): number {
+  const INVALID = Number.POSITIVE_INFINITY;
+  const s = (sortCode ?? '').trim();
+
+  if (!/^\d+$/.test(s)) {
+    return INVALID;
+  }
+
+  return Number(s);
+}
+
+/**
+ * Comparator for PathItem that sorts by numeric sortCode (ascending), then by label.
+ * - Parses sortCode via parseSortCode (digits-only, trimmed).
+ * - Missing/invalid sort codes are treated as +Infinity and therefore sort last.
+ * - If both sort codes are missing/invalid, falls back to label (ascending).
+ * - If numeric sort codes are equal, uses label (ascending) as a stable tie-breaker.
+ * - For Array.prototype.sort: negative => a before b, positive => b before a, 0 => equal.
+ * - Label comparison is delegated to compareByLabelAsc.
+ */
+function compareBySortCodeThenLabelAsc(a: PathItem, b: PathItem): number {
+  const sortA = parseSortCode(a.sortCode);
+  const sortB = parseSortCode(b.sortCode);
+
+  // Check validity of sort codes
+  const aValid = Number.isFinite(sortA);
+  const bValid = Number.isFinite(sortB);
+
+  // Both invalid/missing -> compare by label
+  if (!aValid && !bValid) {
+    return compareByLabelAsc(a, b);
+  }
+
+  // Only A invalid -> A after B
+  if (!aValid) {
+    return 1;
+  }
+
+  // Only B invalid -> B after A
+  if (!bValid) {
+    return -1;
+  }
+
+  // Both valid -> numeric first, label as tie-breaker
+  if (sortA === sortB) {
+    return compareByLabelAsc(a, b); // stable tie-breaker
+  }
+
+  return sortA - sortB;
+}
+
 function compareByLabelAsc(a: PathItem, b: PathItem): number {
   const la = a.label;
   const lb = b.label;
@@ -486,26 +547,58 @@ function compareByLabelAsc(a: PathItem, b: PathItem): number {
   return 0;
 }
 
-// Sort subjects alphabetically at every depth.
-export function sortSubjectTree(subjects: PathItem[]): PathItem[] {
-  const sortRec = (nodes: PathItem[]): PathItem[] =>
-    nodes
-      .slice()
-      .sort(compareByLabelAsc)
-      .map((node) => ({
-        ...node,
-        children: node.children ? sortRec(node.children) : undefined,
-      }));
+/**
+ * Returns the comparator used for a given tree depth.
+ * Depth is 1-based at the root.
+ * - Depth 1–3: compare by label ascending.
+ * - Depth 4–5: compare by numeric sortCode ascending, then label ascending.
+ * - Depth 6+: no comparator (original order preserved).
+ *
+ * @param depth - 1-based depth of the current level in the subject tree.
+ * @returns A comparator function for PathItem or undefined to preserve order.
+ */
+function comparatorForDepth(depth: number) {
+  if (depth <= 3) {
+    return compareByLabelAsc;
+  }
 
-  return sortRec(subjects);
+  if (depth <= 5) {
+    return compareBySortCodeThenLabelAsc;
+  }
+
+  return undefined; // keep original order for deeper levels
+}
+
+/**
+ * Returns a new subject tree sorted per level by a depth-aware comparator.
+ * - Levels 1–3 are sorted by label ascending.
+ * - Levels 4–5 are sorted by sortCode ascending, then label ascending.
+ * - Levels 6+ preserve the original order.
+ * The function is immutable: it does not mutate input nodes or arrays.
+ *
+ * @param subjects - Root array of PathItem nodes to sort.
+ * @returns A new, deeply cloned and sorted PathItem[] tree.
+ */
+export function sortSubjectTree(subjects: PathItem[]): PathItem[] {
+  const sortRec = (nodes: PathItem[], depth: number): PathItem[] => {
+    const cmp = comparatorForDepth(depth);
+    const sorted = cmp ? nodes.slice().sort(cmp) : nodes.slice();
+
+    return sorted.map((node) => ({
+      ...node,
+      children: node.children ? sortRec(node.children, depth + 1) : undefined,
+    }));
+  };
+
+  return sortRec(subjects, 1);
 }
 
 export function sortTablesByUpdated(tables: Table[]): Table[] {
-  return tables.slice().sort((a, b) => {
+  const sortedTables = tables.slice().sort((a, b) => {
     const dateA = Date.parse(a.updated ?? '');
     const dateB = Date.parse(b.updated ?? '');
-    const isValidA = !isNaN(dateA);
-    const isValidB = !isNaN(dateB);
+    const isValidA = !Number.isNaN(dateA);
+    const isValidB = !Number.isNaN(dateB);
 
     // Both invalid/missing -> keep original order
     if (!isValidA && !isValidB) {
@@ -519,9 +612,50 @@ export function sortTablesByUpdated(tables: Table[]): Table[] {
     if (!isValidB) {
       return -1;
     }
-    // Both valid -> newer first
+
+    // If dates are the same, sort on subjectCode ascending
+    if (dateA === dateB) {
+      return compareBySubjectCodeAsc(a, b);
+    }
+
+    // Both valid, but not the same date -> newer first
     return dateB - dateA;
   });
+
+  return sortedTables;
+}
+
+function compareBySubjectCodeAsc(tableA: Table, tableB: Table): number {
+  const subjectA = tableA.subjectCode ?? '';
+  const subjectB = tableB.subjectCode ?? '';
+
+  // check for validity
+  const isSubjectAValid = subjectA.trim() !== '';
+  const isSubjectBValid = subjectB.trim() !== '';
+
+  // Both invalid/missing -> keep original order
+  if (!isSubjectAValid && !isSubjectBValid) {
+    return 0;
+  }
+  // Only A invalid -> B comes first
+  if (!isSubjectAValid) {
+    return 1;
+  }
+  // Only B invalid -> A comes first
+  if (!isSubjectBValid) {
+    return -1;
+  }
+
+  // Compare subjectCodes
+  if (subjectA < subjectB) {
+    return -1;
+  }
+  if (subjectA > subjectB) {
+    return 1;
+  }
+
+  // Same subjectCode too -> keep original order
+  return 0;
 }
 
 export function getStatus(

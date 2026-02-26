@@ -5,9 +5,14 @@ import {
   jsonstat_note,
   jsonstat_noteMandatory,
   extension_dimension,
+  Role,
+  jsonstat_category,
+  jsonstat_extension_link,
+  label,
   CodelistInformation,
 } from '@pxweb2/pxweb2-api-client';
 import {
+  Definitions,
   Dimensions,
   PxTable,
   setPxTableData,
@@ -26,6 +31,146 @@ import {
 } from '@pxweb2/pxweb2-ui';
 import { getLabelText } from '../app/util/utils';
 
+// NOSONAR: Example temporary data for definitions mapping, remove when real data is available from API
+// TODO: Remove when real data is available from API
+//const tempMetaidLinksDataEmpty = {};
+// TODO: Remove temporary data when real data is available from API
+// const tempMetaidLinksData = {
+//   'about-statistics': {
+//     // currently "definisjoner og forklaringer"
+//     'dataset-links': [
+//       {
+//         metaid: 'KORTNAVN:aku',
+//         href: 'https://www.ssb.no/befolkning/folketall/statistikk/befolkning#om-statistikken',
+//         label: 'About the statistics',
+//         type: 'text/html',
+//       },
+//     ],
+//   },
+// };
+// const tempMetaidLinksDataExtended = {
+//   // TODO: Do these two links only contain one item each? They are arrays in the temp data
+//   // which ones should be the "main" link that all tables should have (if they have anything in Definitions)?
+//   'statistics-homepage': {
+//     //currently "statistikkside"
+//     'dataset-links': [
+//       {
+//         metaid: 'KORTNAVN:aku',
+//         href: 'https://www.ssb.no/befolkning/folketall/statistikk/befolkning',
+//         label: 'Statistics homepage',
+//         type: 'text/html',
+//       },
+//     ],
+//   },
+//   'about-statistics': {
+//     // currently "definisjoner og forklaringer"
+//     'dataset-links': [
+//       {
+//         metaid: 'KORTNAVN:aku',
+//         href: 'https://www.ssb.no/befolkning/folketall/statistikk/befolkning#om-statistikken',
+//         label: 'About the statistics',
+//         type: 'text/html',
+//       },
+//     ],
+//   },
+//   definitions: {
+//     KOKkommuneregion0000: {
+//       'dimension-links': [
+//         {
+//           metaid: 'urn:ssb:classification:klass:231',
+//           href: 'https://www.ssb.no/klass/klassifikasjoner/231',
+//           label: 'Classification for region.',
+//           type: 'text/html',
+//         },
+//       ],
+//     },
+//     ContentsCode: {
+//       'category-links': {
+//         KOSKBDU0000: [
+//           {
+//             href: 'https://www.ssb.no/contextvariable/KOSKBDU0000',
+//             label: 'Korrigerte brutto driftsutgifter  (1000 kr)',
+//             type: 'text/html',
+//             metaid:
+//               'urn:ssb:contextvariable:common:8c42e415-e5dc-4a47-93bf-c9c515b39aa6:104549:KOSKBDU0000',
+//           },
+//         ],
+//         KOSKBDUperelev0000: [
+//           {
+//             href: 'https://www.ssb.no/contextvariable/KOSKBDUperelev0000',
+//             label: 'Korrigerte brutto driftsutgifter per elev (kr)',
+//             type: 'text/html',
+//             metaid:
+//               'urn:ssb:contextvariable:common:8c42e415-e5dc-4a47-93bf-c9c515b39aa6:104549:KOSKBDUperelev0000',
+//           },
+//         ],
+//         KOSKBDUperskyss0000: [
+//           {
+//             href: 'https://www.ssb.no/contextvariable/KOSKBDUperskyss0000',
+//             label:
+//               'Korrigerte brutto driftsutgifter per elev  som får skoleskyss (223) (kr)',
+//             type: 'text/html',
+//             metaid:
+//               'urn:ssb:contextvariable:common:8c42e415-e5dc-4a47-93bf-c9c515b39aa6:104549:KOSKBDUperskyss0000',
+//           },
+//         ],
+//       },
+//     },
+//   },
+// };
+
+// TODO: Remove TEMPORARY function to map raw JSON definitions data to Definitions type
+// when real data is available from API
+// TODO: Use the correct Response type from the API when available
+// TODO: This needs a refactor when real data is available from API, quick and dirty for now
+function mapTableDefinitions() {
+  const definitions: Definitions = {};
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  // until real data is available from the API
+  // definitionsJson['statistics-homepage'] &&
+  //   (definitions.statisticsHomepage =
+  //     definitionsJson['statistics-homepage']['dataset-links'][0] || []);
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  // definitionsJson['about-statistics'] &&
+  //   (definitions.statisticsDefinitions =
+  //     definitionsJson['about-statistics']['dataset-links'][0] || []);
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  // Object.keys(definitionsJson.definitions || {}).forEach((dimensionKey) => {
+  //   const dimensionData = definitionsJson.definitions[dimensionKey];
+  //   const variableDefinition: VariableDefinition = {
+  //     variableName: dimensionKey,
+  //     links: [],
+  //   };
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  //   if (dimensionData['dimension-links']) {
+  //     variableDefinition.links.push(...dimensionData['dimension-links']);
+  //   }
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  //   if (dimensionData['category-links']) {
+  //     Object.values(dimensionData['category-links']).forEach(
+  //       (categoryLinks: DefinitionLink[]) => {
+  //         variableDefinition.links.push(...categoryLinks);
+  //       },
+  //     );
+  //   }
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  //   if (!definitions.variablesDefinitions) {
+  //     definitions.variablesDefinitions = [];
+  //   }
+
+  // NOSONAR: Disabled sonar warning for unused code below, as this is temporary code
+  //   definitions.variablesDefinitions.push(variableDefinition);
+  // });
+
+  return definitions;
+}
+
 /**
  * Internal type. Used to keep track of index in json-stat2 value array
  * Need to be an object to be passed by reference
@@ -37,6 +182,15 @@ type counter = {
 interface VariableWithValueDisplayType extends Variable {
   valueDisplayType: ValueDisplayType;
 }
+
+// Narrowed type for a single dimension entry value based on the API client's Dimension type
+type DimensionItem = {
+  label?: label;
+  note?: jsonstat_note;
+  category?: jsonstat_category;
+  extension?: extension_dimension;
+  link?: jsonstat_extension_link;
+};
 
 /**
  * Maps a JSONStat2 dataset response to a PxTable object.
@@ -76,6 +230,7 @@ export function mapJsonStat2Response(
     subjectArea: response.extension?.px?.['subject-area'] ?? '',
     variables: mapVariables(response, mapData),
     contacts: mapContacts(response.extension?.contact),
+    definitions: mapTableDefinitions(), // TODO: Use real data from API response when available
     notes: mapNotes(response.note, response.extension?.noteMandatory),
     pathElements: undefined,
   };
@@ -271,14 +426,18 @@ function getMandatoryNote(
  * @param role - The role object from the JSON-stat 2.0 response.
  * @returns A Variable object if the dimension has valid categories; otherwise, null.
  */
-function mapDimension(id: string, dimension: any, role: any): Variable | null {
+function mapDimension(
+  id: string,
+  dimension: DimensionItem,
+  role: Role | undefined,
+): Variable | null {
   if (dimension.category?.index && dimension.category.label) {
     const variableType = mapVariableTypeEnum(id, role);
     const isContentVariable = variableType === VartypeEnum.CONTENTS_VARIABLE;
 
     const variable: VariableWithValueDisplayType = {
       id: id,
-      label: dimension.label,
+      label: dimension.label ?? '',
       type: variableType,
       mandatory: getMandatoryVariable(dimension.extension),
       values: mapVariableValues(dimension, isContentVariable),
@@ -301,24 +460,28 @@ function mapDimension(id: string, dimension: any, role: any): Variable | null {
  * @returns An array of Value objects.
  */
 function mapVariableValues(
-  dimension: any,
+  dimension: DimensionItem,
   isContentVariable: boolean,
 ): Value[] {
   const valueDisplayType: ValueDisplayType = getValueDisplayType(
     dimension.extension,
   );
   const values: Value[] = [];
-  const indexEntries = Object.entries(dimension.category.index);
+  const category = dimension.category;
+  if (!category?.index || !category?.label) {
+    return values;
+  }
+  const indexEntries = Object.entries(category.index);
   indexEntries.sort(
     ([, valueA], [, valueB]) => Number(valueA) - Number(valueB),
   );
 
   for (const [code] of indexEntries) {
-    if (Object.hasOwn(dimension.category.index, code)) {
+    if (Object.hasOwn(category.index, code)) {
       const labelText: string = getLabelText(
         valueDisplayType,
         code,
-        dimension.category.label[code],
+        category.label[code],
       );
 
       const mappedValue: Value = { code: code, label: labelText };
@@ -343,14 +506,15 @@ function mapVariableValues(
  * @param code - The code of the value.
  * @returns The ContentInfo object for the value.
  */
-function mapContentInfo(dimension: any, code: string): ContentInfo {
-  const unit = dimension.category.unit?.[code] ?? '';
+function mapContentInfo(dimension: DimensionItem, code: string): ContentInfo {
+  const unitInfo = dimension.category?.unit?.[code];
 
   return {
-    unit: unit.base,
-    decimals: unit.decimals,
+    unit: unitInfo?.base ?? '',
+    decimals: unitInfo?.decimals ?? 0,
     referencePeriod: dimension.extension?.refperiod?.[code] ?? '',
     basePeriod: dimension.extension?.basePeriod?.[code] ?? '',
+    alternativeText: dimension.extension?.alternativeText?.[code] ?? '',
   };
 }
 
@@ -360,26 +524,25 @@ function mapContentInfo(dimension: any, code: string): ContentInfo {
  * @param dimension - The dimension object from the JSON-stat 2.0 response.
  * @param mappedValues - The array of Value objects to map the notes to.
  */
-function mapValueNotes(dimension: any, mappedValues: Value[]): void {
-  if (
-    dimension.category?.index &&
-    dimension.category.label &&
-    dimension.category.note
-  ) {
-    const noteEntries = Object.entries(dimension.category.note);
+function mapValueNotes(dimension: DimensionItem, mappedValues: Value[]): void {
+  const category = dimension.category;
+  if (!category?.index || !category?.label || !category?.note) {
+    return;
+  }
 
-    for (const [code] of noteEntries) {
-      if (Object.hasOwn(dimension.category.note, code)) {
-        const noteTexts = dimension.category.note[code];
+  const noteEntries = Object.entries(category.note);
 
-        for (let i = 0; i < noteTexts.length; i++) {
-          let newNote: Note = {
-            text: noteTexts[i],
-            mandatory: getMandatoryValueNote(dimension.extension, code, i),
-          };
+  for (const [code] of noteEntries) {
+    if (Object.hasOwn(category.note, code)) {
+      const noteTexts = category.note[code];
 
-          addNoteToItsValue(code, newNote, mappedValues);
-        }
+      for (let i = 0; i < noteTexts.length; i++) {
+        let newNote: Note = {
+          text: noteTexts[i],
+          mandatory: getMandatoryValueNote(dimension.extension, code, i),
+        };
+
+        addNoteToItsValue(code, newNote, mappedValues);
       }
     }
   }
@@ -394,7 +557,7 @@ function mapValueNotes(dimension: any, mappedValues: Value[]): void {
  * @returns True if the note is mandatory; otherwise, false.
  */
 function getMandatoryValueNote(
-  dimensionExtension: extension_dimension,
+  dimensionExtension: extension_dimension | undefined,
   code: string,
   noteIndex: number,
 ): boolean {
@@ -414,10 +577,8 @@ function getMandatoryValueNote(
 function addNoteToItsValue(code: string, note: Note, values: Value[]): void {
   const mappedValue = values.find((v) => v.code === code);
   if (mappedValue) {
-    if (!mappedValue.notes) {
-      mappedValue.notes = [];
-    }
-    mappedValue.notes?.push(note);
+    mappedValue.notes ??= [];
+    mappedValue.notes.push(note);
   }
 }
 
@@ -428,7 +589,7 @@ function addNoteToItsValue(code: string, note: Note, values: Value[]): void {
  * @returns The value display type for the dimension.
  */
 function getValueDisplayType(
-  dimensionExtension: extension_dimension,
+  dimensionExtension: extension_dimension | undefined,
 ): ValueDisplayType {
   if (dimensionExtension?.show) {
     if (dimensionExtension.show === 'code') {
@@ -453,7 +614,7 @@ function getValueDisplayType(
  * @returns True if the variable is mandatory; otherwise, false.
  */
 function getMandatoryVariable(
-  dimensionExtension: extension_dimension,
+  dimensionExtension: extension_dimension | undefined,
 ): boolean {
   if (dimensionExtension?.elimination) {
     return !dimensionExtension.elimination;
@@ -467,12 +628,16 @@ function getMandatoryVariable(
  * @param dimensionExtension - The dimension extension object from the JSON-stat 2.0 response.
  * @returns An array of CodeList objects.
  */
-function getCodelists(dimensionExtension: extension_dimension): CodeList[] {
+function getCodelists(
+  dimensionExtension: extension_dimension | undefined,
+): CodeList[] {
   if (dimensionExtension?.codelists) {
     return dimensionExtension.codelists.map((codeList: CodelistInformation) => {
       return {
         id: codeList.id,
         label: codeList.label,
+        // No values provided in CodelistInformation; default to empty
+        values: [],
       };
     });
   }
@@ -487,7 +652,7 @@ function getCodelists(dimensionExtension: extension_dimension): CodeList[] {
  * @param role - The role object from the JSON-stat 2.0 response.
  * @returns The corresponding `VartypeEnum` for the given variable ID.
  */
-function mapVariableTypeEnum(id: string, role: any): VartypeEnum {
+function mapVariableTypeEnum(id: string, role: Role | undefined): VartypeEnum {
   if (!role) {
     return VartypeEnum.REGULAR_VARIABLE;
   }

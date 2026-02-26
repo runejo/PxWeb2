@@ -1,6 +1,7 @@
+import { useMemo, useReducer } from 'react';
 import { vi, Mock } from 'vitest';
 import { MemoryRouter } from 'react-router';
-import { waitFor, within } from '@testing-library/react';
+import { waitFor, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import StartPage from './StartPage';
@@ -9,12 +10,31 @@ import type { Table } from '@pxweb2/pxweb2-api-client';
 import { AccessibilityProvider } from '../../context/AccessibilityProvider';
 import { FilterContext } from '../../context/FilterContext';
 import { useLocaleContent } from '../../util/hooks/useLocaleContent';
-import { sortTablesByUpdated } from '../../util/startPageFilters';
 import { renderWithProviders } from '../../util/testing-utils';
 import * as startPageRender from '../../util/startPageRender';
-import * as configModule from '../../util/config/getConfig';
 import { getConfig } from '../../util/config/getConfig';
 import { mockedConfig } from '../../../../test/setupTests';
+
+// Note: `vi.mock` calls are hoisted by Vitest. We declare this mock early so that when `StartPage`
+// (which imports `createTableListSEO`) is evaluated, it receives the mocked implementation.
+vi.mock('../../util/seo/tableListSEO', () => {
+  return {
+    createTableListSEO: vi.fn(() => <div data-testid="table-list-seo" />),
+  };
+});
+
+import { createTableListSEO } from '../../util/seo/tableListSEO';
+
+// Mock screen size via useApp with mutable flags we can control per test
+let mockIsMobile = false;
+let mockIsTablet = false;
+vi.mock('../../context/useApp', () => ({
+  default: () => ({
+    isMobile: mockIsMobile,
+    isTablet: mockIsTablet,
+    isInitialized: true,
+  }),
+}));
 
 // Mock the getAllTables function
 vi.mock('../../util/tableHandler', () => ({
@@ -86,9 +106,21 @@ vi.mock('../../util/hooks/useTopicIcons', () => {
         small: <div data-testid="mock-icon-small" />,
         medium: <div data-testid="mock-icon-medium" />,
       },
+      {
+        id: 'smallonly',
+        small: <div data-testid="mock-icon-smallonly" />,
+      },
+      {
+        id: 'mediumonly',
+        medium: <div data-testid="mock-icon-mediumonly" />,
+      },
     ],
   };
 });
+
+// Import the mocked hooks for use in the harness
+import useApp from '../../context/useApp';
+import { useTopicIcons } from '../../util/hooks/useTopicIcons';
 
 vi.mock('react-i18next', async () => {
   const actual =
@@ -127,8 +159,8 @@ const baseState: StartPageState = {
   },
   originalSubjectTree: [],
   lastUsedYearRange: null,
+  availableTablesWhenQueryApplied: [],
 };
-const config = configModule.getConfig();
 
 describe('StartPage', () => {
   it('should render successfully', async () => {
@@ -177,118 +209,69 @@ describe('StartPage', () => {
     });
   });
 
-  it('renders the hidden SEO table list with correct number of links', async () => {
-    const { findByRole } = renderWithProviders(
-      <AccessibilityProvider>
-        <MemoryRouter>
-          <StartPage />
-        </MemoryRouter>
-      </AccessibilityProvider>,
-    );
+  it('memoizes TableListSEO content and does not re-render when unrelated state changes', async () => {
+    mockIsMobile = true;
+    mockIsTablet = false;
 
-    const heading = await findByRole('heading', {
-      name: 'TableList(SEO)',
-      hidden: true,
-    });
-    const nav = heading.closest('nav') as HTMLElement;
-    expect(nav).toHaveAttribute('aria-hidden', 'true');
-    const links = await within(nav).findAllByRole('link', { hidden: true });
-    expect(links).toHaveLength(2);
-    links.forEach((a) => expect(a).toHaveAttribute('tabindex', '-1'));
-  });
+    const createTableListSEOMock = createTableListSEO as unknown as Mock;
+    createTableListSEOMock.mockClear();
 
-  it('prefixes href with language when showDefaultLanguageInPath=true', async () => {
-    config.language.showDefaultLanguageInPath = true;
-    config.language.defaultLanguage = 'en';
+    // Keep the availableTables array reference stable across re-renders.
+    const tables = [
+      {
+        id: 't1',
+        label: 'Table 1',
+      },
+    ] as unknown as Table[];
 
-    const { findByRole } = renderWithProviders(
-      <AccessibilityProvider>
-        <MemoryRouter>
-          <StartPage />
-        </MemoryRouter>
-      </AccessibilityProvider>,
-    );
+    const mockState: StartPageState = {
+      ...baseState,
+      availableTables: tables,
+      filteredTables: tables,
+    };
 
-    const heading = await findByRole('heading', {
-      name: 'TableList(SEO)',
-      hidden: true,
-    });
-    const nav = heading.closest('nav') as HTMLElement;
-    const links = await within(nav).findAllByRole('link', { hidden: true });
-    links.forEach((a) => {
-      expect(a).toHaveAttribute(
-        'href',
-        expect.stringMatching(/^\/en\/table\//),
+    const mockDispatch = vi.fn();
+
+    function Harness() {
+      const [tick, bump] = useReducer((n: number) => n + 1, 0);
+
+      const contextValue = useMemo(
+        () => ({ state: mockState, dispatch: mockDispatch }),
+        [],
       );
-    });
-  });
 
-  describe('sortTablesByUpdated (date-only, newest first)', () => {
-    const createTable = (overrides: Partial<Table> = {}): Table =>
-      ({
-        id: Math.random().toString(36).slice(2),
-        label: overrides.label ?? 'Some table',
-        updated: overrides.updated,
-        firstPeriod: overrides.firstPeriod ?? '2000',
-        lastPeriod: overrides.lastPeriod ?? '2001',
-        timeUnit: overrides.timeUnit ?? 'Annual',
-        variableNames: overrides.variableNames ?? [],
-        source: overrides.source ?? 'SSB',
-        paths: overrides.paths ?? [],
-        ...overrides,
-      }) as unknown as Table;
+      return (
+        <div data-testid="harness" data-tick={tick}>
+          <button type="button" onClick={bump}>
+            unrelated
+          </button>
+          <FilterContext.Provider value={contextValue}>
+            <StartPage />
+          </FilterContext.Provider>
+        </div>
+      );
+    }
 
-    it('sort on updated DESC (newest first)', () => {
-      const a = createTable({ id: 'a', updated: '2023-01-01T00:00:00Z' });
-      const b = createTable({ id: 'b', updated: '2025-07-15T12:34:56Z' }); // newest
-      const c = createTable({ id: 'c', updated: '2024-12-31T23:59:59Z' });
+    renderWithProviders(
+      <AccessibilityProvider>
+        <MemoryRouter>
+          <Harness />
+        </MemoryRouter>
+      </AccessibilityProvider>,
+    );
 
-      const out = sortTablesByUpdated([a, b, c]);
-      expect(out.map((t) => t.id)).toEqual(['b', 'c', 'a']);
+    await waitFor(() => {
+      expect(screen.getByTestId('table-list-seo')).toBeInTheDocument();
     });
 
-    it('places missing/invalid date at the bottom', () => {
-      const newest = createTable({
-        id: 'newest',
-        updated: '2025-08-05T06:00:00Z',
-      });
-      const invalid = createTable({
-        id: 'invalid',
-        updated: 'not-a-date' as unknown as string,
-      });
-      const missing = createTable({ id: 'missing', updated: undefined });
+    const callsBefore = createTableListSEOMock.mock.calls.length;
+    expect(callsBefore).toBeGreaterThan(0);
 
-      const out = sortTablesByUpdated([invalid, newest, missing]);
-      expect(out.map((t) => t.id)).toEqual(['newest', 'invalid', 'missing']);
-    });
+    // Trigger an unrelated re-render (parent state), without changing i18n.language or availableTables.
+    fireEvent.click(screen.getByRole('button', { name: 'unrelated' }));
 
-    it('does not mutate the original array', () => {
-      const a = createTable({ id: 'a', updated: '2024-01-01T00:00:00Z' });
-      const b = createTable({ id: 'b', updated: '2025-01-01T00:00:00Z' });
-      const input = [a, b];
-      const snapshot = [...input];
-
-      const out = sortTablesByUpdated(input);
-
-      expect(input).toEqual(snapshot);
-      expect(out).not.toBe(input);
-    });
-
-    it('handles ISO date without time', () => {
-      const d1 = createTable({ id: 'd1', updated: '2024-05-01' });
-      const d2 = createTable({ id: 'd2', updated: '2025-03-10' });
-
-      const out = sortTablesByUpdated([d1, d2]);
-      expect(out.map((t) => t.id)).toEqual(['d2', 'd1']);
-    });
-
-    it('preserves original order when updated is equal', () => {
-      const a = createTable({ id: 'a', updated: '2025-01-01T00:00:00Z' });
-      const b = createTable({ id: 'b', updated: '2025-01-01T00:00:00Z' });
-      const c = createTable({ id: 'c', updated: '2025-01-01T00:00:00Z' });
-
-      const out = sortTablesByUpdated([a, b, c]);
-      expect(out.map((t) => t.id)).toEqual(['a', 'b', 'c']);
+    await waitFor(() => {
+      expect(createTableListSEOMock.mock.calls.length).toBe(callsBefore);
     });
   });
 
@@ -445,6 +428,169 @@ describe('StartPage', () => {
         expect(queryByText('Tips 1')).not.toBeInTheDocument();
         expect(queryByText('Tips 2')).not.toBeInTheDocument();
       });
+    });
+  });
+
+  describe('getTopicIcon size selection', () => {
+    // Minimal harness that reproduces the getTopicIcon logic using hooks
+    function IconProbe({ table }: Readonly<{ table: Partial<Table> }>) {
+      const { isMobile, isTablet } = useApp();
+      const isSmallScreen = isTablet === true || isMobile === true;
+      const topicIconComponents = useTopicIcons();
+      const topicId = table.subjectCode;
+      const size = isSmallScreen ? 'small' : 'medium';
+      const icon = topicId
+        ? (topicIconComponents.find((i) => i.id === topicId)?.[size] ?? null)
+        : null;
+
+      return <div data-testid="probe">{icon}</div>;
+    }
+
+    beforeEach(() => {
+      mockIsMobile = false;
+      mockIsTablet = false;
+    });
+
+    it('returns small variant on small screens (mobile)', async () => {
+      mockIsMobile = true;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'al' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-icon-small')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('mock-icon-medium')).toBeNull();
+    });
+
+    it('returns medium variant on large screens (desktop)', async () => {
+      mockIsMobile = false;
+      mockIsTablet = false;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'al' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-icon-medium')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('mock-icon-small')).toBeNull();
+    });
+
+    it('returns null when subjectCode is missing', async () => {
+      mockIsMobile = false;
+      mockIsTablet = false;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{}} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        // probe renders but contains no icon
+        expect(screen.getByTestId('probe').firstChild).toBeNull();
+      });
+      expect(screen.queryByTestId('mock-icon-small')).toBeNull();
+      expect(screen.queryByTestId('mock-icon-medium')).toBeNull();
+    });
+
+    it('returns null when subjectCode does not match any icon', async () => {
+      mockIsMobile = false;
+      mockIsTablet = false;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'notfound' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('probe').firstChild).toBeNull();
+      });
+    });
+
+    it('returns small-only icon on small screens when available', async () => {
+      mockIsMobile = true;
+      mockIsTablet = false;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'smallonly' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-icon-smallonly')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('mock-icon-mediumonly')).toBeNull();
+    });
+
+    it('returns null on desktop when only small variant exists', async () => {
+      mockIsMobile = false;
+      mockIsTablet = false;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'smallonly' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('probe').firstChild).toBeNull();
+      });
+    });
+
+    it('returns null on mobile when only medium variant exists', async () => {
+      mockIsMobile = true;
+      mockIsTablet = false;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'mediumonly' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('probe').firstChild).toBeNull();
+      });
+    });
+
+    it('uses tablet flag to select small variant', async () => {
+      mockIsMobile = false;
+      mockIsTablet = true;
+
+      renderWithProviders(
+        <AccessibilityProvider>
+          <MemoryRouter>
+            <IconProbe table={{ subjectCode: 'al' }} />
+          </MemoryRouter>
+        </AccessibilityProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-icon-small')).toBeInTheDocument();
+      });
+      expect(screen.queryByTestId('mock-icon-medium')).toBeNull();
     });
   });
 });

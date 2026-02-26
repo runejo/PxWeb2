@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+
 import {
   findAncestors,
   findChildren,
@@ -13,6 +14,7 @@ import {
   getVariables,
   sortTimeUnit,
   sortSubjectTree,
+  sortTablesByUpdated,
 } from '../util/startPageFilters';
 import { Filter, type PathItem } from '../pages/StartPage/StartPageTypes';
 import { Table } from '@pxweb2/pxweb2-api-client';
@@ -595,5 +597,327 @@ describe('sortSubjectTreeAlpha', () => {
     // Lecel 3 - Alpha → Delta-branch
     const deltaKids = alphaKids.find((n) => n.label === 'Delta')!.children!;
     expect(deltaKids.map((n) => n.label)).toEqual(['Alpha', 'Gamma']);
+  });
+});
+
+describe('sortSubjectTree comparator by depth', () => {
+  it('uses label comparator at depth 1 (top-level)', () => {
+    const subjects = [
+      { id: 'b', label: 'Bravo', sortCode: '001' },
+      { id: 'a', label: 'Alpha', sortCode: '999' },
+      { id: 'c', label: 'Charlie', sortCode: '000' },
+    ];
+
+    const sorted = sortSubjectTree(subjects);
+    expect(sorted.map((n) => n.label)).toEqual(['Alpha', 'Bravo', 'Charlie']); // label asc
+  });
+
+  it('uses label comparator up to depth 3', () => {
+    const subjects = [
+      {
+        id: 'A',
+        label: 'Alpha',
+        children: [
+          { id: 'A2', label: 'Zebra' },
+          { id: 'A1', label: 'Beta' },
+          {
+            id: 'A3',
+            label: 'Delta',
+            children: [
+              { id: 'A3b', label: 'Gamma' },
+              { id: 'A3a', label: 'Alpha' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'B',
+        label: 'Bravo',
+        children: [
+          { id: 'B2', label: 'Lima' },
+          { id: 'B1', label: 'Echo' },
+        ],
+      },
+    ];
+
+    const sorted = sortSubjectTree(subjects);
+
+    // Depth 1
+    expect(sorted.map((n) => n.label)).toEqual(['Alpha', 'Bravo']);
+
+    // Depth 2 - Alpha branch
+    const alphaBranch = sorted[0].children!;
+    expect(alphaBranch.map((n) => n.label)).toEqual(['Beta', 'Delta', 'Zebra']);
+
+    // Depth 3 - Alpha → Delta branch
+    const deltaBranch = alphaBranch.find((n) => n.label === 'Delta')!.children!;
+    expect(deltaBranch.map((n) => n.label)).toEqual(['Alpha', 'Gamma']);
+  });
+
+  it('uses sortCode then label comparator at depth 4', () => {
+    const level4Children = [
+      { id: 'c', label: 'C', sortCode: '2' }, // 2
+      { id: 'a', label: 'A', sortCode: '001' }, // 1
+      { id: 'z', label: 'Z', sortCode: '010' }, // 10
+      { id: 'b', label: 'B', sortCode: undefined }, // invalid -> after valids
+    ];
+    const subjects = [
+      {
+        id: 'root',
+        label: 'Root',
+        children: [
+          {
+            id: 'l2',
+            label: 'Level2',
+            children: [{ id: 'l3', label: 'Level3', children: level4Children }],
+          },
+        ],
+      },
+    ];
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl4 = sorted[0].children![0].children![0].children!;
+    expect(lvl4.map((n) => n.label)).toEqual(['A', 'C', 'Z', 'B']);
+  });
+
+  it('uses sortCode comparator and label tie-breaker at depth 5', () => {
+    const level5Children = [
+      { id: 'a', label: 'Alpha', sortCode: '5' },
+      { id: 'c', label: 'Charlie', sortCode: '1' },
+      { id: 'b', label: 'Bravo', sortCode: '1' },
+    ];
+    const subjects = [
+      {
+        id: 'root',
+        label: 'Root',
+        children: [
+          {
+            id: 'l2',
+            label: 'Level2',
+            children: [
+              {
+                id: 'l3',
+                label: 'Level3',
+                children: [
+                  { id: 'l4', label: 'Level4', children: level5Children },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl5 = sorted[0].children![0].children![0].children![0].children!;
+    expect(lvl5.map((n) => n.label)).toEqual(['Bravo', 'Charlie', 'Alpha']); // tie-break by label
+  });
+
+  it('keeps original order deeper than level 5 (depth 6+)', () => {
+    const level6Children = [
+      { id: 'c1', label: 'Bravo', sortCode: '001' },
+      { id: 'c2', label: 'Alpha', sortCode: '0' },
+      { id: 'c3', label: 'Charlie', sortCode: '999' },
+    ];
+    const subjects = [
+      {
+        id: 'root',
+        label: 'Root',
+        children: [
+          {
+            id: 'l2',
+            label: 'X',
+            children: [
+              {
+                id: 'l3',
+                label: 'Y',
+                children: [
+                  {
+                    id: 'l4',
+                    label: 'Z',
+                    children: [
+                      { id: 'l5', label: 'W', children: level6Children },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl6 =
+      sorted[0].children![0].children![0].children![0].children![0].children!;
+    expect(lvl6.map((n) => n.label)).toEqual(['Bravo', 'Alpha', 'Charlie']); // insertion order preserved
+  });
+});
+
+describe('compareBySortCodeThenLabelAsc (via sortSubjectTree at depth 4)', () => {
+  const makeTreeWithLevel4 = (children: PathItem[]) => [
+    {
+      id: 'root',
+      label: 'Root',
+      children: [
+        {
+          id: 'l2',
+          label: 'Level2',
+          children: [{ id: 'l3', label: 'Level3', children: children }],
+        },
+      ],
+    },
+  ];
+
+  it('sorts valid numeric sort codes ascending', () => {
+    const children = [
+      { id: 'b', label: 'B', sortCode: '010' },
+      { id: 'a', label: 'A', sortCode: '2' },
+      { id: 'c', label: 'C', sortCode: '001' }, // parsed as 1
+    ];
+    const subjects = makeTreeWithLevel4(children);
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl4 = sorted[0].children![0].children![0].children!;
+    expect(lvl4.map((n) => n.label)).toEqual(['C', 'A', 'B']); // 1, 2, 10
+  });
+
+  it('places invalid/missing sort codes after valid ones and falls back to label', () => {
+    const children = [
+      { id: 'a', label: 'Alpha', sortCode: undefined }, // invalid
+      { id: 'b', label: 'Bravo', sortCode: '3' }, // valid
+      { id: 'c', label: 'Charlie', sortCode: 'notdigits' }, // invalid
+    ];
+    const subjects = makeTreeWithLevel4(children);
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl4 = sorted[0].children![0].children![0].children!;
+    expect(lvl4.map((n) => n.label)).toEqual(['Bravo', 'Alpha', 'Charlie']);
+  });
+
+  it('uses label as tie-breaker when sort codes are equal', () => {
+    const children = [
+      { id: 'b', label: 'Bravo', sortCode: '5' },
+      { id: 'a', label: 'Alpha', sortCode: '5' },
+      { id: 'c', label: 'Charlie', sortCode: '5' },
+    ];
+    const subjects = makeTreeWithLevel4(children);
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl4 = sorted[0].children![0].children![0].children!;
+    expect(lvl4.map((n) => n.label)).toEqual(['Alpha', 'Bravo', 'Charlie']);
+  });
+
+  it('trims whitespace and treats non-digit strings as invalid', () => {
+    const children = [
+      { id: 'a', label: 'A', sortCode: '  4 ' }, // valid after trim
+      { id: 'b', label: 'C', sortCode: '   ' }, // invalid after trim -> empty
+      { id: 'c', label: 'B', sortCode: '-1' }, // invalid (non-digit)
+    ];
+    const subjects = makeTreeWithLevel4(children);
+
+    const sorted = sortSubjectTree(subjects);
+    const lvl4 = sorted[0].children![0].children![0].children!;
+    expect(lvl4.map((n) => n.label)).toEqual(['A', 'B', 'C']); // 4, then invalids by label
+  });
+});
+
+describe('sortTablesByUpdated (date-only, newest first)', () => {
+  const createTable = (overrides: Partial<Table> = {}): Table =>
+    ({
+      id: Math.random().toString(36).slice(2),
+      label: overrides.label ?? 'Some table',
+      updated: overrides.updated,
+      firstPeriod: overrides.firstPeriod ?? '2000',
+      lastPeriod: overrides.lastPeriod ?? '2001',
+      timeUnit: overrides.timeUnit ?? 'Annual',
+      variableNames: overrides.variableNames ?? [],
+      source: overrides.source ?? 'SSB',
+      paths: overrides.paths ?? [],
+      ...overrides,
+    }) as unknown as Table;
+
+  it('sort on updated DESC (newest first)', () => {
+    const a = createTable({ id: 'a', updated: '2023-01-01T00:00:00Z' });
+    const b = createTable({ id: 'b', updated: '2025-07-15T12:34:56Z' }); // newest
+    const c = createTable({ id: 'c', updated: '2024-12-31T23:59:59Z' });
+
+    const out = sortTablesByUpdated([a, b, c]);
+    expect(out.map((t) => t.id)).toEqual(['b', 'c', 'a']);
+  });
+
+  it('sorts same dates by subjectCode', () => {
+    const a = createTable({
+      id: 'a',
+      updated: '2025-01-01T00:00:00Z',
+      subjectCode: 'zz',
+    });
+    const b = createTable({
+      id: 'b',
+      updated: '2025-01-01T00:00:00Z',
+      subjectCode: 'aa',
+    });
+    const c = createTable({
+      id: 'c',
+      updated: '2025-01-01T00:00:00Z',
+      subjectCode: 'mm',
+    });
+    const d = createTable({
+      id: 'd',
+      updated: '2025-01-01T00:00:00Z',
+      subjectCode: undefined,
+    });
+    const e = createTable({
+      id: 'e',
+      updated: '2025-01-01T00:00:00Z',
+      subjectCode: 'aa',
+    });
+
+    const out = sortTablesByUpdated([a, b, c, d, e]);
+    expect(out.map((t) => t.id)).toEqual(['b', 'e', 'c', 'a', 'd']);
+  });
+
+  it('places missing/invalid date at the bottom', () => {
+    const newest = createTable({
+      id: 'newest',
+      updated: '2025-08-05T06:00:00Z',
+    });
+    const invalid = createTable({
+      id: 'invalid',
+      updated: 'not-a-date' as unknown as string,
+    });
+    const missing = createTable({ id: 'missing', updated: undefined });
+
+    const out = sortTablesByUpdated([invalid, newest, missing]);
+    expect(out.map((t) => t.id)).toEqual(['newest', 'invalid', 'missing']);
+  });
+
+  it('does not mutate the original array', () => {
+    const a = createTable({ id: 'a', updated: '2024-01-01T00:00:00Z' });
+    const b = createTable({ id: 'b', updated: '2025-01-01T00:00:00Z' });
+    const input = [a, b];
+    const snapshot = [...input];
+
+    const out = sortTablesByUpdated(input);
+
+    expect(input).toEqual(snapshot);
+    expect(out).not.toBe(input);
+  });
+
+  it('handles ISO date without time', () => {
+    const d1 = createTable({ id: 'd1', updated: '2024-05-01' });
+    const d2 = createTable({ id: 'd2', updated: '2025-03-10' });
+
+    const out = sortTablesByUpdated([d1, d2]);
+    expect(out.map((t) => t.id)).toEqual(['d2', 'd1']);
+  });
+
+  it('preserves original order when updated is equal', () => {
+    const a = createTable({ id: 'a', updated: '2025-01-01T00:00:00Z' });
+    const b = createTable({ id: 'b', updated: '2025-01-01T00:00:00Z' });
+    const c = createTable({ id: 'c', updated: '2025-01-01T00:00:00Z' });
+
+    const out = sortTablesByUpdated([a, b, c]);
+    expect(out.map((t) => t.id)).toEqual(['a', 'b', 'c']);
   });
 });
