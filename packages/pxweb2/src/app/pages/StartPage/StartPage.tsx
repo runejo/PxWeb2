@@ -33,7 +33,7 @@ import { Header } from '../../components/Header/Header';
 import { Footer } from '../../components/Footer/Footer';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import { FilterSidebar } from '../../components/FilterSidebar/FilterSidebar';
-import { SkipToContent } from '../../components/SkipToContent/SkipToContent';
+import { SkipToTarget } from '../../components/SkipToTarget/SkipToTarget';
 import { ActionType } from './StartPageTypes';
 import {
   getSubjectTree,
@@ -62,7 +62,7 @@ import { createTableListSEO } from '../../util/seo/tableListSEO';
 
 const StartPage = () => {
   const { t, i18n } = useTranslation();
-  const { isMobile, isTablet } = useApp();
+  const { isMobile, isTablet, setLanguageFilter } = useApp();
   const { state, dispatch } = useContext(FilterContext);
   useFilterUrlSync(state, dispatch, t);
 
@@ -96,6 +96,11 @@ const StartPage = () => {
   const filterOverlayRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
+
+  // Clear any previously set app-level language filtering when StartPage mounts.
+  useEffect(() => {
+    setLanguageFilter([]);
+  }, [setLanguageFilter]);
 
   // On initial load, seed search from URL query parameter once
   useEffect(() => {
@@ -736,11 +741,13 @@ const StartPage = () => {
   return (
     <>
       <nav>
-        <SkipToContent
+        <SkipToTarget
+          styleVariant="content"
           targetId="px-start-filter"
           label={t('start_page.skip_to.filter')}
         />
-        <SkipToContent
+        <SkipToTarget
+          styleVariant="content"
           targetId="px-start-result"
           label={t('start_page.skip_to.result')}
         />
