@@ -1,8 +1,11 @@
 import cl from 'clsx';
+import { useTranslation } from 'react-i18next';
+import { ReactNode, useContext, useState, useMemo } from 'react';
+import { upperFirst, debounce } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 import { ActionType, PathItem } from '../../pages/StartPage/StartPageTypes';
 import styles from './FilterSidebar.module.scss';
-import { useTranslation } from 'react-i18next';
 import { Checkbox, FilterCategory, Search } from '@pxweb2/pxweb2-ui';
 import {
   findAncestors,
@@ -11,9 +14,6 @@ import {
 } from '../../util/startPageFilters';
 import { FilterContext } from '../../context/FilterContext';
 import { YearRangeFilter } from './YearRangeFilter';
-import { ReactNode, useContext, useState, useMemo } from 'react';
-import { upperFirst, debounce } from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
 
 interface CollapsibleProps {
   subject: PathItem;
@@ -29,8 +29,10 @@ interface FilterSidebarProps {
 
 // Handles one subject node in the tree.
 // Checked means this node is selected as the representative filter.
-// Unchecked means this node and its descendants are removed, then the nearest
-// ancestor is restored to keep parent-level selection stable.
+// Unchecked means this node and its descendants are removed. The nearest
+// ancestor is only restored when no other active descendant remains under that
+// same ancestor, so sibling selections stay explicit instead of collapsing back
+// to the parent subject.
 const Collapsible: React.FC<CollapsibleProps> = ({
   subject,
   index,
@@ -43,6 +45,9 @@ const Collapsible: React.FC<CollapsibleProps> = ({
   const subjectId = subject.id;
   const subjectLabel = subject.label;
   const subjectTree = state.availableFilters.subjectTree;
+  const activeSubjectFilters = state.activeFilters.filter(
+    (filter) => filter.type === 'subject',
+  );
 
   return (
     <div className={styles.filterLabel}>
@@ -95,6 +100,14 @@ const Collapsible: React.FC<CollapsibleProps> = ({
             // Deselecting a node clears that node and every descendant.
             const descendants = [subject, ...children];
 
+            // We need to check if any of the removed filters are still active as siblings under the same parent,
+            // so we keep track of their uniqueIds in a set for O(1) lookups.
+            const removedUniqueIds = new Set(
+              descendants
+                .map((descendant) => descendant.uniqueId)
+                .filter((uniqueId): uniqueId is string => !!uniqueId),
+            );
+
             dispatch({
               type: ActionType.REMOVE_FILTERS,
               payload: descendants.map((d) => ({
@@ -104,15 +117,29 @@ const Collapsible: React.FC<CollapsibleProps> = ({
               })),
             });
 
-            // Restore nearest ancestor if needed so parent-level selection
-            // remains explicit in the active filter list.
-            const parent: PathItem | undefined = ancestors.length
-              ? ancestors[ancestors.length - 1]
-              : undefined;
+            // Subject uniqueIds encode the full tree path, so a shared prefix
+            // lets us detect whether another branch under the same parent is
+            // still active without re-walking the subtree. If another child is
+            // still selected, we must not promote the parent back into the
+            // active filter list.
+            const parent = ancestors.at(-1);
+            const hasRemainingActiveDescendantUnderParent =
+              !!parent?.uniqueId &&
+              activeSubjectFilters.some(
+                (filter) =>
+                  // Must share the same parent uniqueId prefix to be a sibling, but must not be one we just removed.
+                  !!filter.uniqueId &&
+                  filter.uniqueId.startsWith(`${parent.uniqueId}__`) &&
+                  !removedUniqueIds.has(filter.uniqueId),
+              );
             const isParentInFilter = state.activeFilters.some(
               (f) => f.type === 'subject' && f.value === parent?.id,
             );
-            if (parent && !isParentInFilter) {
+            if (
+              parent &&
+              !isParentInFilter &&
+              !hasRemainingActiveDescendantUnderParent
+            ) {
               dispatch({
                 type: ActionType.ADD_FILTER,
                 payload: [
@@ -408,11 +435,33 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
     [state.availableTables],
   );
 
+  const subjectFilterCount = state.activeFilters.filter(
+    (filter) => filter.type === 'subject',
+  ).length;
+  const yearRangeFilterCount = state.activeFilters.filter(
+    (filter) => filter.type === 'yearRange',
+  ).length;
+  const timeUnitFilterCount = state.activeFilters.filter(
+    (filter) => filter.type === 'timeUnit',
+  ).length;
+  const variableFilterCount = state.activeFilters.filter(
+    (filter) => filter.type === 'variable',
+  ).length;
+  const statusFilterCount = state.activeFilters.filter(
+    (filter) => filter.type === 'status',
+  ).length;
+
   return (
-    <nav aria-label="Filter">
+    <nav aria-label={t('start_page.filter.button')}>
       <div className={styles.sideBar}>
         <div className={styles.sideBarWrapper}>
-          <FilterCategory header={t('start_page.filter.subject')}>
+          <FilterCategory
+            header={t('start_page.filter.subject')}
+            screenReaderTxt={t('start_page.filter.badge.aria', {
+              count: subjectFilterCount,
+            })}
+            activeFiltersCount={subjectFilterCount}
+          >
             <ul className={styles.filterList}>
               <RenderSubjects
                 firstLevel={true}
@@ -421,19 +470,43 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               />
             </ul>
           </FilterCategory>
-          <FilterCategory header={t('start_page.filter.year.title')}>
+          <FilterCategory
+            header={t('start_page.filter.year.title')}
+            screenReaderTxt={t('start_page.filter.badge.aria', {
+              count: yearRangeFilterCount,
+            })}
+            activeFiltersCount={yearRangeFilterCount}
+          >
             <YearRangeFilter onFilterChange={onFilterChange} />
           </FilterCategory>
-          <FilterCategory header={t('start_page.filter.time_unit')}>
+          <FilterCategory
+            header={t('start_page.filter.time_unit')}
+            screenReaderTxt={t('start_page.filter.badge.aria', {
+              count: timeUnitFilterCount,
+            })}
+            activeFiltersCount={timeUnitFilterCount}
+          >
             <ul className={styles.filterList}>
               <RenderTimeUnitFilters onFilterChange={onFilterChange} />
             </ul>
           </FilterCategory>
-          <FilterCategory header={t('start_page.filter.variabel')}>
+          <FilterCategory
+            header={t('start_page.filter.variabel')}
+            screenReaderTxt={t('start_page.filter.badge.aria', {
+              count: variableFilterCount,
+            })}
+            activeFiltersCount={variableFilterCount}
+          >
             <VariablesFilter onFilterChange={onFilterChange} />
           </FilterCategory>
           {shouldShowStatusFilter && (
-            <FilterCategory header={t('start_page.filter.status.title')}>
+            <FilterCategory
+              header={t('start_page.filter.status.title')}
+              screenReaderTxt={t('start_page.filter.badge.aria', {
+                count: statusFilterCount,
+              })}
+              activeFiltersCount={statusFilterCount}
+            >
               <StatusFilter onFilterChange={onFilterChange} />
             </FilterCategory>
           )}
