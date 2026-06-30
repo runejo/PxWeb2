@@ -16,7 +16,7 @@
       width: 100cqw;
       overflow-x: auto;
 
-      &:focus-visible {
+      &:focus-within {
         outline: 2px solid var(--px-color-border-focus-outline);
         outline-offset: -2px;
         border-radius: var(--px-border-radius-medium);
@@ -63,6 +63,11 @@
   overflow-x: auto;
   max-width: 100%; /* Set this to limit table width to screen */
 }
+
+.chartContainer {
+  width: 100%;
+}
+
 .gradientContainer::after {
   content: '';
   position: absolute;
