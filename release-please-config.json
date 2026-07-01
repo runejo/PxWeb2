@@ -3,6 +3,7 @@
   "release-type": "node",
   "release-as": "2.9.0",
   "pull-request-header": ":robot: Good moring sir! *beep* *boop*",
+  "pull-request-footer": "the end :doom:",
   "always-update": true,
   "packages": {
     ".": {
