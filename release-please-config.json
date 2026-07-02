@@ -1,23 +1,22 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "release-type": "node",
-  "pull-request-header": ":robot: Good moring sir! *beep* *boop*",
-  "pull-request-footer": "the end :doom:",
-  "always-update": true,
+  "pull-request-header": "PxWeb release",
+  "always-update": false,
   "packages": {
     ".": {
       "changelog-sections": [
-        { "type": "feat", "section": "Features" },
-        { "type": "fix", "section": "Bug Fixes" },
-        { "type": "perf", "section": "Performance Improvements" },
-        { "type": "revert", "section": "Reverts" },
-        { "type": "docs", "section": "Documentation" },
-        { "type": "style", "section": "Styles" },
-        { "type": "refactor", "section": "Code Refactoring" },
-        { "type": "test", "section": "Tests" },
-        { "type": "build", "section": "Build System and dependencies" },
-        { "type": "ci", "section": "Build System and dependencies" },
-        { "type": "chore", "section": "Chores", "hidden": true }
+        { "type": "feat", "section": ":sparkles: Features" },
+        { "type": "fix", "section": ":bug: Bug Fixes" },
+        { "type": "perf", "section": ":zap: Performance Improvements" },
+        { "type": "revert", "section": ":rewind: Reverts" },
+        { "type": "docs", "section": ":books: Documentation" },
+        { "type": "style", "section": ":art: Styles" },
+        { "type": "refactor", "section": ":wrench: Code Refactoring" },
+        { "type": "test", "section": ":test_tube: Tests" },
+        { "type": "build", "section": ":building_construction: Build System and dependencies" },
+        { "type": "ci", "section": ":gear: Build System and dependencies" },
+        { "type": "chore", "section": ":broom: Chores", "hidden": false }
       ]
     }
   }
