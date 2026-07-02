@@ -7,16 +7,18 @@
     ".": {
       "changelog-sections": [
         { "type": "feat", "section": ":sparkles: Features" },
+        { "type": "feature", "section": ":sparkles: Features" },
         { "type": "fix", "section": ":bug: Bug Fixes" },
+        { "type": "patch", "section": ":bug: Bug Fixes" },
         { "type": "perf", "section": ":zap: Performance Improvements" },
-        { "type": "revert", "section": ":rewind: Reverts" },
+        { "type": "refactor", "section": ":wrench: Code Refactoring" },
         { "type": "docs", "section": ":books: Documentation" },
         { "type": "style", "section": ":art: Styles" },
-        { "type": "refactor", "section": ":wrench: Code Refactoring" },
         { "type": "test", "section": ":test_tube: Tests" },
         { "type": "build", "section": ":building_construction: Build System and dependencies" },
-        { "type": "ci", "section": ":gear: Build System and dependencies" },
-        { "type": "chore", "section": ":broom: Chores", "hidden": false }
+        { "type": "ci", "section": ":building_construction: Build System and dependencies" },
+        { "type": "chore", "section": ":broom: Chores", "hidden": false },
+        { "type": "revert", "section": ":rewind: Reverts" }
       ]
     }
   }
