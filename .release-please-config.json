@@ -6,6 +6,10 @@
   "pull-request-header": "Release",
   "pull-request-footer": "[PxTools](https://www.pxtools.net/)",
   "always-update": true,
+  "include-commit-authors": true,
+  "include-component-in-tag": false,
+  "include-v-in-release-name": true,
+  "include-v-in-tag": true,
   "packages": {
     ".": {
       "changelog-sections": [
@@ -18,12 +22,17 @@
         { "type": "docs", "section": ":books: Documentation" },
         { "type": "style", "section": ":art: Styles" },
         { "type": "test", "section": ":test_tube: Tests" },
-        { "type": "build", "section": ":building_construction: Build System and dependencies" },
-        { "type": "ci", "section": ":building_construction: Build System and dependencies" },
+        {
+          "type": "build",
+          "section": ":building_construction: Build System and dependencies"
+        },
+        {
+          "type": "ci",
+          "section": ":building_construction: Build System and dependencies"
+        },
         { "type": "chore", "section": ":broom: Chores", "hidden": false },
         { "type": "revert", "section": ":rewind: Reverts" }
-      ],
-      "include-commit-authors": true
+      ]
     }
   }
 }
