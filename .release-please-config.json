@@ -4,6 +4,7 @@
   "pull-request-header": "PxWeb release",
   "pull-request-footer": "<https://www.pxtools.net/>",
   "always-update": false,
+  "initial-version": "2.9.0",
   "packages": {
     ".": {
       "changelog-sections": [
