@@ -2,7 +2,7 @@
 
 Welcome to PxWeb 2, the new interface for PxWeb. Right now we are working hard on the new version of PxWeb 2.
 
-For more detailed information about this project, please refer to our [Project pages](https://www.pxtools.net/PxWeb2/).
+For more detailed information about this project, please refer to our [project pages](https://www.pxtools.net/PxWeb2/).
 
 If you want to have a look at the current state of PxWeb2 you could always see our automatic build of our main branch at [pxweb2.pages.dev](https://pxweb2.pages.dev/).
 
