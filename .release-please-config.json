@@ -9,7 +9,7 @@
   "include-component-in-tag": false,
   "include-v-in-release-name": true,
   "include-v-in-tag": true,
-  "commit-search-depth": 100,
+  "commit-search-depth": 50,
   "initial-version": "2.9.0",
   "include-commit-authors": true,
   "packages": {
