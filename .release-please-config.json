@@ -3,8 +3,7 @@
   "release-type": "node",
   "pull-request-header": "Release",
   "pull-request-footer": "[PxTools](https://www.pxtools.net/)",
-  "always-update": false,
-  "initial-version": "2.9.0",
+  "always-update": true,
   "packages": {
     ".": {
       "changelog-sections": [
@@ -21,7 +20,8 @@
         { "type": "ci", "section": ":building_construction: Build System and dependencies" },
         { "type": "chore", "section": ":broom: Chores", "hidden": false },
         { "type": "revert", "section": ":rewind: Reverts" }
-      ]
+      ],
+      "include-commit-authors": true
     }
   }
 }
