@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.7](https://github.com/runejo/PxWeb2/compare/v2.9.6...v2.9.7) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* add descriptive step names for repository checkout in release workflow ([790e333](https://github.com/runejo/PxWeb2/commit/790e333e9dacde9d2dfd5d310d2fc2b7e25a03a3))
+
 ## [2.9.6](https://github.com/runejo/PxWeb2/compare/v2.9.5...v2.9.6) (2026-07-03)
 
 
