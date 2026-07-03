@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.9.1](https://github.com/runejo/PxWeb2/compare/v2.9.0...v2.9.1) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* add release-please configuration file and update workflow to use it ([bb3de21](https://github.com/runejo/PxWeb2/commit/bb3de213f230ff3f40544ec266d578242824820d))
+* comment out token in release-please action configuration ([5556cc4](https://github.com/runejo/PxWeb2/commit/5556cc4ff6f4dbed6248d20557c6e0b6d2a81b66))
+* remove pull request header and footer from release-please configuration ([9e6396a](https://github.com/runejo/PxWeb2/commit/9e6396aa81b9154f5921dd8eeb0f691bd22e0cae))
+* update workflows to trigger on push events for version tags ([28c40e8](https://github.com/runejo/PxWeb2/commit/28c40e83939a77377425121aaa0fc3b179296b8b))
+
+
+### :rewind: Reverts
+
+* re-add manifest ([0cab778](https://github.com/runejo/PxWeb2/commit/0cab77846d400fba64955f5b367251af8f930d85))
+
 ## 2.9.0 (2026-07-02)
 
 
