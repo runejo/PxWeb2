@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.2](https://github.com/runejo/PxWeb2/compare/v2.9.1...v2.9.2) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* update tag pattern syntax in workflows for consistency ([04d0bdc](https://github.com/runejo/PxWeb2/commit/04d0bdc8e3d04b3679d077c5a272cffabe5f9070))
+
 ## [2.9.1](https://github.com/runejo/PxWeb2/compare/v2.9.0...v2.9.1) (2026-07-03)
 
 
