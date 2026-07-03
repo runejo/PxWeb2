@@ -52,11 +52,11 @@ jobs:
       - name: Create zip file
         run: pushd packages/pxweb2/dist && zip -r $OLDPWD/pxweb-${{ env.TAG_NAME }}.zip ./
 
-      # Optional: Generate cryptographic build provenance for security
-      - name: Generate Build Provenance
-        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
-        with:
-          subject-path: pxweb-${{ env.TAG_NAME }}.zip
+      ## Optional: Generate cryptographic build provenance for security
+      #- name: Generate Build Provenance
+      #  uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+      #  with:
+      #    subject-path: pxweb-${{ env.TAG_NAME }}.zip
 
       - name: Upload release asset
         env:
