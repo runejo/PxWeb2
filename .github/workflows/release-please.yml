@@ -128,4 +128,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release edit ${{ env.TAG_NAME }}
+          gh release edit ${{ env.TAG_NAME }} --draft=false
