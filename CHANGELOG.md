@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.8](https://github.com/runejo/PxWeb2/compare/v2.9.7...v2.9.8) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* comment out build provenance step in release workflow ([8cfd24c](https://github.com/runejo/PxWeb2/commit/8cfd24c3d70e6c15ebe98af7e0e40c95e55512c7))
+
 ## [2.9.7](https://github.com/runejo/PxWeb2/compare/v2.9.6...v2.9.7) (2026-07-03)
 
 
