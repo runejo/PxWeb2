@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.6](https://github.com/runejo/PxWeb2/compare/v2.9.5...v2.9.6) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* update release command to publish non-draft releases ([258aa05](https://github.com/runejo/PxWeb2/commit/258aa05582364eb7e9b5b0547c39e404597ddcda))
+
 ## [2.9.5](https://github.com/runejo/PxWeb2/compare/v2.9.4...v2.9.5) (2026-07-03)
 
 
