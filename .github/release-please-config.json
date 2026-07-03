@@ -3,8 +3,6 @@
   "draft": true,
   "force-tag-creation": true,
   "release-type": "node",
-  "pull-request-header": "Release",
-  "pull-request-footer": "[PxTools](https://www.pxtools.net/)",
   "always-update": true,
   "include-component-in-tag": false,
   "include-v-in-release-name": true,
