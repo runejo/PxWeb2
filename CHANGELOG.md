@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.5](https://github.com/runejo/PxWeb2/compare/v2.9.4...v2.9.5) (2026-07-03)
+
+
+### :rewind: Reverts
+
+* update package name to @pxweb2/source in package.json ([f3acbef](https://github.com/runejo/PxWeb2/commit/f3acbefa8d6ebd16474aba3a1b004fcfa717f1f6))
+
 ## [2.9.4](https://github.com/runejo/PxWeb2/compare/v2.9.3...v2.9.4) (2026-07-03)
 
 
