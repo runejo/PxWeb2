@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.4](https://github.com/runejo/PxWeb2/compare/v2.9.3...v2.9.4) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* ensure TAG_NAME is set for Docker image tagging in release workflow ([7a69fc8](https://github.com/runejo/PxWeb2/commit/7a69fc837407b838badd1883fc4ee619521a84ba))
+
 ## [2.9.3](https://github.com/runejo/PxWeb2/compare/v2.9.2...v2.9.3) (2026-07-03)
 
 
