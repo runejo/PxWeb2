@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.9.3](https://github.com/runejo/PxWeb2/compare/v2.9.2...v2.9.3) (2026-07-03)
+
+
+### :building_construction: Build System and dependencies
+
+* enhance asset upload workflow with build provenance generation ([f92d76c](https://github.com/runejo/PxWeb2/commit/f92d76cb1f81d93e82bc00e432612c0ea3942d24))
+
+
+### :broom: Chores
+
+* enhance release workflow with asset upload and Docker publishing ([c41f4fc](https://github.com/runejo/PxWeb2/commit/c41f4fcac1c0313d57080eb0f21596c225432d27))
+
 ## [2.9.2](https://github.com/runejo/PxWeb2/compare/v2.9.1...v2.9.2) (2026-07-03)
 
 
