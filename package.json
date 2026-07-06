@@ -1,6 +1,6 @@
 {
   "name": "@pxweb2/source",
-  "version": "2.9.8",
+  "version": "0.0.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -61,6 +61,7 @@
   },
   "packageManager": "npm@11.13.0",
   "readme": "ERROR: No README data found!",
+  "_id": "@pxweb2/source@0.0.0",
   "workspaces": [
     "packages/*"
   ]
