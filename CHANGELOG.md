@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.9.9](https://github.com/runejo/PxWeb2/compare/v2.9.8...v2.9.9) (2026-07-06)
+
+
+### :rewind: Reverts
+
+* rewind to upstream versions ([17224e3](https://github.com/runejo/PxWeb2/commit/17224e3935bd53c7df215e106b8098e6ff065b26))
+* rewind to upstream versions ([60ab24c](https://github.com/runejo/PxWeb2/commit/60ab24cf399fb095057ab0f8645d01dd3d942024))
+
 ## [2.9.8](https://github.com/runejo/PxWeb2/compare/v2.9.7...v2.9.8) (2026-07-03)
 
 
