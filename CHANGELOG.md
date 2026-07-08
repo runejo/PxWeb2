@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.9.10](https://github.com/runejo/PxWeb2/compare/v2.9.9...v2.9.10) (2026-07-08)
+
+
+### :broom: Chores
+
+* remove package version from release manifest ([a409ee2](https://github.com/runejo/PxWeb2/commit/a409ee2e433244fa4105f40ebf7811a1df4889bf))
+* update release manifest to include package version ([08d5cd4](https://github.com/runejo/PxWeb2/commit/08d5cd498083cfa3b13f99ccacdb4119c163558a))
+* update release-please configuration for prerelease handling ([70f89a6](https://github.com/runejo/PxWeb2/commit/70f89a6d5d19714a6099279c745cdca3dc33750f))
+
 ## [2.9.9](https://github.com/runejo/PxWeb2/compare/v2.9.8...v2.9.9) (2026-07-06)
 
 
