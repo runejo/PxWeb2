@@ -11,6 +11,7 @@
   "initial-version": "2.9.0",
   "prerelease": true,
   "release-type": "node",
+  "versioning": "prerelease",
   "packages": {
     ".": {
       "changelog-sections": [
