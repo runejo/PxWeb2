@@ -28,6 +28,7 @@ jobs:
         with:
           #token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: .github/release-please-config.json
+          versioning-strategy: prerelease
 
   upload-asset:
     needs: release-please
