@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.9.10](https://github.com/runejo/PxWeb2/compare/v2.9.9...v2.9.10) (2026-07-08)
+
+
+### :broom: Chores
+
+* clean up release-please configuration by removing redundant fields ([afd8a17](https://github.com/runejo/PxWeb2/commit/afd8a17f1b2f3504da4afb7ea226088907932f61))
+* correct versioning key to versioning-strategy in release-please configuration ([089bf27](https://github.com/runejo/PxWeb2/commit/089bf27cae387748af935b88f2c147ca65035306))
+* ensure versioning is set to prerelease in release-please configuration ([112fa88](https://github.com/runejo/PxWeb2/commit/112fa88c2e6bc446a07566a8662afc6d18672892))
+* remove manifest configuration for prerelease settings ([a8e7270](https://github.com/runejo/PxWeb2/commit/a8e72702ca3d5771fd089d299e0c6eb4543618dc))
+* remove package version from release manifest ([a409ee2](https://github.com/runejo/PxWeb2/commit/a409ee2e433244fa4105f40ebf7811a1df4889bf))
+* reorganize release-please configuration for clarity ([a06a9fe](https://github.com/runejo/PxWeb2/commit/a06a9fe2b09a2a28f4b04e5280130ed21e42bfbc))
+* set versioning strategy to prerelease in release-please configuration ([63f439e](https://github.com/runejo/PxWeb2/commit/63f439e17e630688683754acd04b46e2fb3593a3))
+* update release manifest to include package version ([08d5cd4](https://github.com/runejo/PxWeb2/commit/08d5cd498083cfa3b13f99ccacdb4119c163558a))
+* update release-please configuration for prerelease handling ([70f89a6](https://github.com/runejo/PxWeb2/commit/70f89a6d5d19714a6099279c745cdca3dc33750f))
+
 ## [2.9.9](https://github.com/runejo/PxWeb2/compare/v2.9.8...v2.9.9) (2026-07-06)
 
 
