@@ -9,9 +9,11 @@
   "include-v-in-tag": true,
   "commit-search-depth": 50,
   "initial-version": "2.9.0",
-  "include-commit-authors": true,
   "packages": {
     ".": {
+      "include-commit-authors": true,
+      "prerelease": true,
+      "prerelease-type": "beta",
       "changelog-sections": [
         { "type": "feat", "section": ":sparkles: Features" },
         { "type": "feature", "section": ":sparkles: Features" },

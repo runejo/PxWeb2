@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      force_prerelease:
+        description: 'Check to force a prerelease'
+        type: boolean
+        default: true
 
 jobs:
   release-please:
@@ -22,6 +28,11 @@ jobs:
         with:
           #token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: .github/release-please-config.json
+          manifest-config: |
+            {
+              "prerelease": ${{ inputs.force_prerelease || false }},
+              "prerelease-type": "beta"
+            }
 
   upload-asset:
     needs: release-please
