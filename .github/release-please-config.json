@@ -1,16 +1,16 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "always-update": true,
+  "commit-search-depth": 50,
   "draft": true,
   "force-tag-creation": true,
-  "release-type": "node",
-  "always-update": true,
+  "include-commit-authors": true,
   "include-component-in-tag": false,
   "include-v-in-release-name": true,
   "include-v-in-tag": true,
-  "commit-search-depth": 50,
   "initial-version": "2.9.0",
-  "include-commit-authors": true,
   "prerelease": true,
+  "release-type": "node",
   "packages": {
     ".": {
       "changelog-sections": [
