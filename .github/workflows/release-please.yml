@@ -21,7 +21,7 @@ jobs:
       pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created || steps.prerelease.outputs.release_created }}
-      release_tag_name: ${{ steps.release.outputs.tag_name || steps.prerelease.outputs.tag_name }}
+      tag_name: ${{ steps.release.outputs.tag_name || steps.prerelease.outputs.tag_name }}
 
     steps:
       - name: Create release
@@ -48,7 +48,7 @@ jobs:
       attestations: write
 
     env:
-      TAG_NAME: ${{ needs.release-please.outputs.release_tag_name }}
+      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
 
     steps:
       - name: Checkout repository
@@ -84,7 +84,7 @@ jobs:
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}
-      TAG_NAME: ${{ needs.release-please.outputs.release_tag_name }}
+      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
 
     steps:
       - name: Checkout repository
@@ -131,7 +131,7 @@ jobs:
       contents: write
 
     env:
-      TAG_NAME: ${{ needs.release-please.outputs.release_tag_name }}
+      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
 
     steps:
       - name: Checkout repository
