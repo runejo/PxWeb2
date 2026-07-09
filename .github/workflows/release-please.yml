@@ -30,7 +30,7 @@ jobs:
         id: release
         with:
           config-file: .github/release-please-config.json
-          manifest-file: .github/release-manifest.json
+          manifest-file: .github/release-please-manifest.json
 
       - name: Create prerelease
         if: inputs.prerelease == true
@@ -38,7 +38,7 @@ jobs:
         id: prerelease
         with:
           config-file: .github/prerelease-please-config.json
-          manifest-file: .github/prerelease-manifest.json
+          manifest-file: .github/prerelease-please-manifest.json
 
   upload-asset:
     needs: release-please
