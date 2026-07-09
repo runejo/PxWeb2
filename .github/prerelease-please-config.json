@@ -11,7 +11,7 @@
   "include-v-in-tag": true,
   "initial-version": "2.9.0",
   "prerelease": true,
-  "prerelease-type": "rc",
+  "prerelease-type": "rc.1",
   "release-type": "node",
   "versioning": "prerelease",
   "packages": {
