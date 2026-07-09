@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.9.10-rc.1](https://github.com/runejo/PxWeb2/compare/v2.9.10-rc...v2.9.10-rc.1) (2026-07-09)
+
+
+### :broom: Chores
+
+* add release and prerelease manifest files and update config for prerelease type ([8ada384](https://github.com/runejo/PxWeb2/commit/8ada384bad399b733c9048587eb71bf4a03b6136))
+* add release and prerelease manifest files for versioning ([d976970](https://github.com/runejo/PxWeb2/commit/d9769705ab8aeb4f054919fe33f2c19d098f1b52))
+* enhance release workflow to detect prerelease versions from package.json ([1b83ea6](https://github.com/runejo/PxWeb2/commit/1b83ea6bb055d88d408571a5242d1f35d9767150))
+* standardize output variable names in release workflow ([a70ddc2](https://github.com/runejo/PxWeb2/commit/a70ddc2e4f84c9acfb69078fd75d596c70810257))
+* update manifest file names for release and prerelease workflows ([93d919d](https://github.com/runejo/PxWeb2/commit/93d919dfa9aaf30ce0014e7ff76e214801923949))
+
 ## [2.9.10-rc](https://github.com/runejo/PxWeb2/compare/v2.9.9...v2.9.10-rc) (2026-07-09)
 
 
