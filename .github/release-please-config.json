@@ -30,6 +30,13 @@
         { "type": "ci", "section": ":building_construction: Build System and dependencies" },
         { "type": "chore", "section": ":broom: Chores", "hidden": false },
         { "type": "revert", "section": ":rewind: Reverts" }
+      ],
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".github/prerelease-please-manifest.json",
+          "jsonpath": "$[\".\"]"
+        }
       ]
     }
   }
