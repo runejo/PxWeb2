@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        description: Create a prerelease instead of a release
+        required: false
+        default: 'false'
 
 jobs:
   release-please:
@@ -13,18 +19,20 @@ jobs:
       issues: write
       pull-requests: write
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      release_tag_name: ${{ steps.release.outputs.tag_name }}
-      prerelease_created: ${{ steps.prerelease.outputs.release_created }}
-      prerelease_tag_name: ${{ steps.prerelease.outputs.tag_name }}
+      release_created: ${{ steps.release.outputs.release_created || steps.prerelease.outputs.release_created }}
+      release_tag_name: ${{ steps.release.outputs.tag_name || steps.prerelease.outputs.tag_name }}
 
     steps:
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+      - name: Create release
+        if: inputs.prerelease == false
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
           config-file: .github/release-please-config.json
 
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+      - name: Create prerelease
+        if: inputs.prerelease == true
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: prerelease
         with:
           config-file: .github/prerelease-please-config.json
