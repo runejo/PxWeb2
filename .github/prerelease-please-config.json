@@ -9,10 +9,10 @@
   "include-v-in-release-name": true,
   "include-v-in-tag": true,
   "initial-version": "2.9.0",
-  "prerelease": false,
+  "prerelease": true,
   "prerelease-type": "rc",
   "release-type": "node",
-  "versioning": "default",
+  "versioning": "prerelease",
   "packages": {
     ".": {
       "changelog-sections": [

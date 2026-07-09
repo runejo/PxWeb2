@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      force_prerelease:
-        description: 'Check to force a prerelease'
-        type: boolean
-        default: true
 
 jobs:
   release-please:
@@ -20,15 +14,20 @@ jobs:
       pull-requests: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
+      release_tag_name: ${{ steps.release.outputs.tag_name }}
+      prerelease_created: ${{ steps.prerelease.outputs.release_created }}
+      prerelease_tag_name: ${{ steps.prerelease.outputs.tag_name }}
 
     steps:
       - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         id: release
         with:
-          #token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: .github/release-please-config.json
-          versioning-strategy: prerelease
+
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: prerelease
+        with:
+          config-file: .github/prerelease-please-config.json
 
   upload-asset:
     needs: release-please
@@ -40,7 +39,7 @@ jobs:
       attestations: write
 
     env:
-      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+      TAG_NAME: ${{ needs.release-please.outputs.release_tag_name }}
 
     steps:
       - name: Checkout repository
@@ -59,12 +58,6 @@ jobs:
       - name: Create zip file
         run: pushd packages/pxweb2/dist && zip -r $OLDPWD/pxweb-${{ env.TAG_NAME }}.zip ./
 
-      ## Optional: Generate cryptographic build provenance for security
-      #- name: Generate Build Provenance
-      #  uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
-      #  with:
-      #    subject-path: pxweb-${{ env.TAG_NAME }}.zip
-
       - name: Upload release asset
         env:
           GH_TOKEN: ${{ github.token }}
@@ -82,7 +75,7 @@ jobs:
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}
-      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+      TAG_NAME: ${{ needs.release-please.outputs.release_tag_name }}
 
     steps:
       - name: Checkout repository
@@ -129,7 +122,7 @@ jobs:
       contents: write
 
     env:
-      TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
+      TAG_NAME: ${{ needs.release-please.outputs.release_tag_name }}
 
     steps:
       - name: Checkout repository
