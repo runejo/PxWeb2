@@ -1,5 +1,41 @@
 # Changelog
 
+## [2.9.10](https://github.com/runejo/PxWeb2/compare/v2.9.9...v2.9.10) (2026-07-09)
+
+
+### :books: Documentation
+
+* add detailed release and pre-release guidelines to the maintainers guide ([fff3001](https://github.com/runejo/PxWeb2/commit/fff30010808db376099e6d864bbba2029ea71cdf))
+* add guidelines for maintaining a linear commit history in the maintainers guide ([5d8039f](https://github.com/runejo/PxWeb2/commit/5d8039fffa79b96066386db092840da82f2e3608))
+
+
+### :broom: Chores
+
+* add changelog-type configuration to prerelease-please config ([00ae583](https://github.com/runejo/PxWeb2/commit/00ae583c9375d2a62acc832e47891ab2c4492e1b))
+* add extra-files configuration for prerelease manifest in release-please config ([6ae7764](https://github.com/runejo/PxWeb2/commit/6ae7764aff86f680b799bca0affc5d12896fe3b9))
+* add release and prerelease manifest files and update config for prerelease type ([8ada384](https://github.com/runejo/PxWeb2/commit/8ada384bad399b733c9048587eb71bf4a03b6136))
+* add release and prerelease manifest files for versioning ([d976970](https://github.com/runejo/PxWeb2/commit/d9769705ab8aeb4f054919fe33f2c19d098f1b52))
+* clean up release-please configuration by removing redundant fields ([afd8a17](https://github.com/runejo/PxWeb2/commit/afd8a17f1b2f3504da4afb7ea226088907932f61))
+* correct versioning key to versioning-strategy in release-please configuration ([089bf27](https://github.com/runejo/PxWeb2/commit/089bf27cae387748af935b88f2c147ca65035306))
+* enhance release workflow to detect prerelease versions from package.json ([1b83ea6](https://github.com/runejo/PxWeb2/commit/1b83ea6bb055d88d408571a5242d1f35d9767150))
+* ensure versioning is set to prerelease in release-please configuration ([112fa88](https://github.com/runejo/PxWeb2/commit/112fa88c2e6bc446a07566a8662afc6d18672892))
+* **main:** release 2.9.10-rc ([#204](https://github.com/runejo/PxWeb2/issues/204)) ([99da9b4](https://github.com/runejo/PxWeb2/commit/99da9b4406d941af65fe32696eec750761505c8c))
+* **main:** release 2.9.10-rc.1 ([#205](https://github.com/runejo/PxWeb2/issues/205)) ([f88ad1c](https://github.com/runejo/PxWeb2/commit/f88ad1c694664712fa4bf35aa3cbd4e67e78848b))
+* refactor prerelease step in release workflow for clarity and efficiency ([c338443](https://github.com/runejo/PxWeb2/commit/c33844379ca0b6a1a047050068a09aa6bb26d029))
+* remove manifest configuration for prerelease settings ([a8e7270](https://github.com/runejo/PxWeb2/commit/a8e72702ca3d5771fd089d299e0c6eb4543618dc))
+* remove package version from release manifest ([a409ee2](https://github.com/runejo/PxWeb2/commit/a409ee2e433244fa4105f40ebf7811a1df4889bf))
+* reorganize release-please configuration for clarity ([a06a9fe](https://github.com/runejo/PxWeb2/commit/a06a9fe2b09a2a28f4b04e5280130ed21e42bfbc))
+* set versioning strategy to prerelease in release-please configuration ([63f439e](https://github.com/runejo/PxWeb2/commit/63f439e17e630688683754acd04b46e2fb3593a3))
+* standardize output variable names in release workflow ([a70ddc2](https://github.com/runejo/PxWeb2/commit/a70ddc2e4f84c9acfb69078fd75d596c70810257))
+* update changelog-type to default in release-please configurations and add workflow input for prerelease ([1606f4a](https://github.com/runejo/PxWeb2/commit/1606f4ae51b92ba317befa1c179508758a03f6f0))
+* update conditions for release and prerelease creation in workflow ([e96a3cc](https://github.com/runejo/PxWeb2/commit/e96a3ccbab056b6cf960bb2f18f924cb13976198))
+* update manifest file names for release and prerelease workflows ([93d919d](https://github.com/runejo/PxWeb2/commit/93d919dfa9aaf30ce0014e7ff76e214801923949))
+* update prerelease input type to boolean and set default to false ([e8e42cd](https://github.com/runejo/PxWeb2/commit/e8e42cd08c29590f287a90b80c97ae2a8d152b5d))
+* update release manifest to include package version ([08d5cd4](https://github.com/runejo/PxWeb2/commit/08d5cd498083cfa3b13f99ccacdb4119c163558a))
+* update release-please configuration for default versioning and add prerelease config ([5e92227](https://github.com/runejo/PxWeb2/commit/5e92227f2118c2aa57b5e9358069af3e25f5d0d4))
+* update release-please configuration for prerelease handling ([70f89a6](https://github.com/runejo/PxWeb2/commit/70f89a6d5d19714a6099279c745cdca3dc33750f))
+* update step name to clarify prerelease detection from package.json ([c32e4d7](https://github.com/runejo/PxWeb2/commit/c32e4d7edc73fb89d7106329a1ed3e52b5cdbfa2))
+
 ## [2.9.10-rc.1](https://github.com/runejo/PxWeb2/compare/v2.9.10-rc...v2.9.10-rc.1) (2026-07-09)
 
 
