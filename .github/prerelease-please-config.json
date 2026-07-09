@@ -1,6 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "always-update": true,
+  "changelog-type": "github",
   "commit-search-depth": 50,
   "draft": true,
   "force-tag-creation": true,
