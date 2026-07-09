@@ -164,6 +164,15 @@ It first creates or updates a generated release PR.
 
 Without approving and merging the generated release PR, there is no final release.
 
+### Linear commit history (important)
+
+Keep a linear history on main.
+This makes release-please easier to reason about and keeps changelog generation predictable.
+
+1. Prefer squash-and-merge or rebase-and-merge for PRs.
+2. Avoid unnecessary merge commits from outdated branches.
+3. Keep commit messages clean, because they are used to generate release notes.
+
 ### How it is triggered
 
 1. Push to main: runs automatically.
@@ -193,7 +202,6 @@ Use commit messages like:
 
 1. feat: add x
 2. fix: correct y
-3. feat!: breaking change in z
 
 If commits do not follow this style, release-please may not create the expected release PR or tag.
 
@@ -201,4 +209,5 @@ If commits do not follow this style, release-please may not create the expected 
 
 1. Ensure PR titles and commit messages are descriptive and follow conventional commits.
 2. Confirm package.json version format is correct for the intended release type.
-3. Verify workflow success in Actions before announcing the release.
+3. Maintain a linear history on main when merging PRs.
+4. Verify workflow success in Actions before announcing the release.
