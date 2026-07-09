@@ -138,3 +138,67 @@ For existing third-party component dependencies, we will utilize Dependabot to h
 We are committed to continuously updating our dependencies to ensure that we are using the latest versions. However, in some cases, we may encounter conflicts with NX plugins that prevent us from updating to the latest versions. In such situations, we carefully evaluate the impact and risks before deciding on the appropriate course of action.
 
 In the event of a security vulnerability being discovered in any of our dependencies, we will prioritize attending to it urgently. Our team will take immediate action to mitigate the risk and apply necessary patches or updates.
+
+## Releases and pre-releases
+
+We publish releases through the GitHub workflow [release-please.yml](.github/workflows/release-please.yml).
+The workflow uses [release-please](https://github.com/googleapis/release-please) and [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to decide version bumps and generate release notes.
+
+Useful release-please links:
+
+1. [release-please repository](https://github.com/googleapis/release-please)
+2. [release-please-action](https://github.com/googleapis/release-please-action)
+3. [Action inputs and outputs](https://github.com/googleapis/release-please-action#action-inputs)
+4. [Manifest configuration](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md)
+5. [release-please config reference](https://github.com/googleapis/release-please/blob/main/docs/customizing.md)
+
+### Release PR flow (important)
+
+Release-please does not create a release immediately.
+It first creates or updates a generated release PR.
+
+1. A generated PR is opened with the proposed version bump and changelog updates.
+2. Maintainers must review and approve that PR.
+3. The PR must be merged to main.
+4. After merge, release-please creates the GitHub release and tag.
+
+Without approving and merging the generated release PR, there is no final release.
+
+### How it is triggered
+
+1. Push to main: runs automatically.
+2. Manual run: use GitHub Actions and start the release-please workflow with workflow_dispatch.
+   - You can set the prerelease input to true for a manual pre-release run.
+
+### How stable vs pre-release is selected
+
+The workflow checks package.json version.
+
+1. If version is a semver pre-release (for example 2.9.10-rc or 2.9.10-beta.1), it uses the pre-release config.
+2. If version is a normal semver release (for example 2.9.10), it uses the normal release config.
+3. For manual runs, prerelease input can be used to force pre-release behavior.
+
+### What the workflow publishes
+
+When a release is created, the pipeline also:
+
+1. Builds and uploads a zip artifact named pxweb-{tag}.zip to the GitHub release.
+2. Builds and publishes multi-arch Docker images to GHCR.
+3. Publishes the GitHub release (removes draft state).
+
+### Commit message rules (important)
+
+release-please depends on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+Use commit messages like:
+
+1. feat: add x
+2. fix: correct y
+3. feat!: breaking change in z
+
+If commits do not follow this style, release-please may not create the expected release PR or tag.
+
+### Maintainer checklist
+
+1. Ensure PR titles and commit messages are descriptive and follow conventional commits.
+2. Confirm package.json version format is correct for the intended release type.
+3. Verify workflow success in Actions before announcing the release.
