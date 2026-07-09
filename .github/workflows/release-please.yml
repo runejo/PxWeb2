@@ -38,6 +38,14 @@ jobs:
           fi
           echo "is_prerelease=${IS_PRERELEASE}" >> "$GITHUB_OUTPUT"
 
+      - name: Create prerelease
+        if: (github.event_name == 'workflow_dispatch' && inputs.prerelease == true) || steps.detect-prerelease.outputs.is_prerelease == 'true'
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        id: prerelease
+        with:
+          config-file: .github/prerelease-please-config.json
+          manifest-file: .github/prerelease-please-manifest.json
+
       - name: Create release
         if: (github.event_name == 'workflow_dispatch' && inputs.prerelease == false) || steps.detect-prerelease.outputs.is_prerelease == 'false'
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
@@ -46,13 +54,7 @@ jobs:
           config-file: .github/release-please-config.json
           manifest-file: .github/release-please-manifest.json
 
-      - name: Create prerelease
-        if: (github.event_name == 'workflow_dispatch' && inputs.prerelease == true) || steps.detect-prerelease.outputs.is_prerelease == 'true'
-        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-        id: prerelease
-        with:
-          config-file: .github/prerelease-please-config.json
-          manifest-file: .github/prerelease-please-manifest.json
+
 
   upload-asset:
     needs: release-please
