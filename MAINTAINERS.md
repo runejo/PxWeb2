@@ -29,7 +29,7 @@ An overview of the current technical debt in the project:
     - For security reasons, we want to wait at least 9 days before updating packages.
     - Use NPM '--before' or npm-check-updates '--cooldown' flags.
        - Note: There are challenges with using npm-check-updates and cooldown, read this issue:
-          https://github.com/raineorshine/npm-check-updates/issues/1556#issuecomment-3809050192
+          <https://github.com/raineorshine/npm-check-updates/issues/1556#issuecomment-3809050192>
     - First update Storybook to the latest version that is outside the cooldown of 9 days:
        - Go to Storybook and find the correct version to update to
           OR look at which Storybook version is wanted in the command output of:
