@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.9.11](https://github.com/runejo/PxWeb2/compare/v2.9.10...v2.9.11) (2026-07-10)
+
+
+### :broom: Chores
+
+* add prerelease and release configuration files for versioning and changelog management ([8787c62](https://github.com/runejo/PxWeb2/commit/8787c627617cbaa364240f694877eb5d78f17f5c))
+* remove obsolete GitHub workflows and release configuration files ([a403e78](https://github.com/runejo/PxWeb2/commit/a403e78a470912c0d02c77c299dd2517adb1df6d))
+* update release configuration and workflow for consistency ([1bdba67](https://github.com/runejo/PxWeb2/commit/1bdba67bbe27e9773bc632f56973099cf20103c9))
+
 ## [2.9.10](https://github.com/runejo/PxWeb2/compare/v2.9.9...v2.9.10) (2026-07-09)
 
 
