@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.9.11](https://github.com/runejo/PxWeb2/compare/v2.9.10...v2.9.11) (2026-08-10)
+
+
+### :building_construction: Build System and dependencies
+
+* **deps-dev:** bump @typescript-eslint/eslint-plugin ([#1377](https://github.com/runejo/PxWeb2/issues/1377)) ([86ddd66](https://github.com/runejo/PxWeb2/commit/86ddd66622ddc52abdaaef43b10bfa2e0c1d0686))
+* **deps-dev:** bump fast-uri from 3.1.2 to 3.1.4 ([#1381](https://github.com/runejo/PxWeb2/issues/1381)) ([53669f3](https://github.com/runejo/PxWeb2/commit/53669f36cd3a133d18d638840daa010f3d695dcc))
+* **deps-dev:** bump js-yaml from 4.2.0 to 4.3.0 ([#1386](https://github.com/runejo/PxWeb2/issues/1386)) ([5b6af2d](https://github.com/runejo/PxWeb2/commit/5b6af2d8af667d7972332aff5d82030ac5cc7c1c))
+* **deps-dev:** bump shiki from 4.2.0 to 4.3.1 ([#1379](https://github.com/runejo/PxWeb2/issues/1379)) ([465e268](https://github.com/runejo/PxWeb2/commit/465e26880b230f182a7c7593582d6a280933ec17))
+* **deps-dev:** bump wrangler from 4.103.0 to 4.112.0 ([#1376](https://github.com/runejo/PxWeb2/issues/1376)) ([36e0980](https://github.com/runejo/PxWeb2/commit/36e0980e69fcf5bf636147dc67bd7f4781bbae0f))
+* **deps:** bump actions/checkout from 7.0.0 to 7.0.1 ([#1396](https://github.com/runejo/PxWeb2/issues/1396)) ([e2f0cc7](https://github.com/runejo/PxWeb2/commit/e2f0cc7fd13924b028f669fedcb92939474f547c))
+* **deps:** bump actions/setup-node from 6.4.0 to 7.0.0 ([#1393](https://github.com/runejo/PxWeb2/issues/1393)) ([e47b369](https://github.com/runejo/PxWeb2/commit/e47b369b19562d53740a35d4bc68c3dd5857cf7c))
+* **deps:** bump chromaui/action from 17.5.0 to 18.0.1 ([#1370](https://github.com/runejo/PxWeb2/issues/1370)) ([74b3ff6](https://github.com/runejo/PxWeb2/commit/74b3ff69ab76908d1cefbc0fa85de865ec9d9a26))
+* **deps:** bump chromaui/action from 18.0.1 to 18.1.0 ([#1401](https://github.com/runejo/PxWeb2/issues/1401)) ([9f47534](https://github.com/runejo/PxWeb2/commit/9f475346a0ea81e9acb7bdf9151c4ed910a45798))
+* **deps:** bump docker/build-push-action from 7.2.0 to 7.3.0 ([#1373](https://github.com/runejo/PxWeb2/issues/1373)) ([38bacb5](https://github.com/runejo/PxWeb2/commit/38bacb5425b0751357fa1e1e113a95c64335a06e))
+* **deps:** bump docker/login-action from 4.2.0 to 4.4.0 ([#1372](https://github.com/runejo/PxWeb2/issues/1372)) ([9decb89](https://github.com/runejo/PxWeb2/commit/9decb89e449b2d7329d4e11f08e713f4a089fce9))
+* **deps:** bump docker/login-action from 4.4.0 to 4.5.1 ([#1399](https://github.com/runejo/PxWeb2/issues/1399)) ([5accbc7](https://github.com/runejo/PxWeb2/commit/5accbc77cc7838ce9df43d9b8024da30afe7f4a1))
+* **deps:** bump docker/metadata-action from 6.1.0 to 6.2.0 ([#1371](https://github.com/runejo/PxWeb2/issues/1371)) ([109ad1f](https://github.com/runejo/PxWeb2/commit/109ad1fc207ab3e81d32d718ed68f7aa26d18d22))
+* **deps:** bump docker/setup-buildx-action from 4.1.0 to 4.2.0 ([#1392](https://github.com/runejo/PxWeb2/issues/1392)) ([bb973a4](https://github.com/runejo/PxWeb2/commit/bb973a432f47d9bd281148b197f346a66ca0ed7f))
+* **deps:** bump docker/setup-qemu-action from 4.1.0 to 4.2.0 ([#1374](https://github.com/runejo/PxWeb2/issues/1374)) ([5c7819c](https://github.com/runejo/PxWeb2/commit/5c7819c6a95f70378394cc0aa087406801e7a086))
+* **deps:** bump github/codeql-action/upload-sarif ([#1395](https://github.com/runejo/PxWeb2/issues/1395)) ([f1da332](https://github.com/runejo/PxWeb2/commit/f1da332c3f8b480314f6ee8c967b01a25057261b))
+* **deps:** bump github/codeql-action/upload-sarif ([#1404](https://github.com/runejo/PxWeb2/issues/1404)) ([c0afca9](https://github.com/runejo/PxWeb2/commit/c0afca94703eb5c4078364b53d5a10bfa2ac93fa))
+* **deps:** bump immutable from 5.1.6 to 5.1.9 ([#1380](https://github.com/runejo/PxWeb2/issues/1380)) ([9d85c16](https://github.com/runejo/PxWeb2/commit/9d85c164ddd3510a0337ea9fff506953df56ad24))
+* **deps:** bump motion from 12.40.0 to 12.42.2 ([#1387](https://github.com/runejo/PxWeb2/issues/1387)) ([f05523d](https://github.com/runejo/PxWeb2/commit/f05523d740ab89e30c085ff2ca74b922e34ecc71))
+* **deps:** bump node from 24.17.0-slim to 24.18.0-slim ([#1363](https://github.com/runejo/PxWeb2/issues/1363)) ([052a18f](https://github.com/runejo/PxWeb2/commit/052a18ff302d805ffb3b7bfff583370d0091f820))
+* **deps:** bump react-router from 8.0.1 to 8.2.0 ([#1390](https://github.com/runejo/PxWeb2/issues/1390)) ([9496e87](https://github.com/runejo/PxWeb2/commit/9496e8756087341f1be4da078d8076d61fa2e367))
+* **deps:** bump react-router from 8.2.0 to 8.3.0 ([#1384](https://github.com/runejo/PxWeb2/issues/1384)) ([f3af2e2](https://github.com/runejo/PxWeb2/commit/f3af2e2c23af9be19ec148cabd5bd9c58d225942))
+* **deps:** bump sharp and wrangler ([#1383](https://github.com/runejo/PxWeb2/issues/1383)) ([406db34](https://github.com/runejo/PxWeb2/commit/406db34d62199376f2a3a06cd6d9e7a869e7a0c9))
+* **deps:** bump shell-quote and concurrently ([#1382](https://github.com/runejo/PxWeb2/issues/1382)) ([828e86c](https://github.com/runejo/PxWeb2/commit/828e86c503bee22838a430d243a8f4f49464ab21))
+* **deps:** bump SonarSource/sonarqube-scan-action from 8.2.0 to 8.2.1 ([#1397](https://github.com/runejo/PxWeb2/issues/1397)) ([01c3656](https://github.com/runejo/PxWeb2/commit/01c3656240b9dfd91a8c2ea5bae1da3217cb4c31))
+* **deps:** bump vite from 8.0.16 to 8.1.5 ([#1378](https://github.com/runejo/PxWeb2/issues/1378)) ([8113fcf](https://github.com/runejo/PxWeb2/commit/8113fcffdc04d50e3e32334a3cca21c7409eaa10))
+
+
+### :broom: Chores
+
+* add prerelease and release configuration files for versioning and changelog management ([8787c62](https://github.com/runejo/PxWeb2/commit/8787c627617cbaa364240f694877eb5d78f17f5c))
+* remove obsolete GitHub workflows and release configuration files ([a403e78](https://github.com/runejo/PxWeb2/commit/a403e78a470912c0d02c77c299dd2517adb1df6d))
+* Update project minor and patch dependencies 20260803 ([#1398](https://github.com/runejo/PxWeb2/issues/1398)) ([0aebee2](https://github.com/runejo/PxWeb2/commit/0aebee2606eff1056a43cf1f2d950f313447a052))
+* update release configuration and workflow for consistency ([1bdba67](https://github.com/runejo/PxWeb2/commit/1bdba67bbe27e9773bc632f56973099cf20103c9))
+
 ## [2.9.10](https://github.com/runejo/PxWeb2/compare/v2.9.9...v2.9.10) (2026-07-09)
 
 
